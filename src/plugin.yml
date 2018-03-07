@@ -1,0 +1,7 @@
+name: SkyArena
+author: Arthix
+version: 0.1-PRE-ALPHA-DEV-SNAPSHOT-BLEEDING
+main: fr.arthix.skyarena.SkyArena
+commands:
+    skyarena:
+    group:
