@@ -4,5 +4,5 @@ public enum ArenaDifficulty {
     EASY,
     MEDIUM,
     HARD,
-    EXTREME;
+    EXTREME
 }

@@ -20,39 +20,41 @@ public class Arena {
      - status
      */
 
-    private String arenaName;
+    private String name;
     private List<UUID> players;
     private List<Location> playersSpawn;
     private List<Location> mobsSpawn;
-    private int wavesMax;
+    private int maxWaves;
+    private int actualWave;
     private String bossName;
     private ArenaDifficulty difficulty;
-    private ArenaState arenaState;
+    private ArenaState state;
 
-    public Arena(String arenaName, List<Location> playersSpawn, List<Location> mobsSpawn, int wavesMax, String bossName, ArenaDifficulty difficulty) {
-        this.arenaName = arenaName;
+    public Arena(String arenaName, List<Location> playersSpawn, List<Location> mobsSpawn, int maxWaves, String bossName, ArenaDifficulty difficulty) {
+        this.name = arenaName;
         this.playersSpawn = playersSpawn;
         this.mobsSpawn = mobsSpawn;
-        this.wavesMax = wavesMax;
+        this.maxWaves = maxWaves;
+        this.actualWave = 0;
         this.bossName = bossName;
         this.difficulty = difficulty;
-        this.arenaState = ArenaState.FREE;
+        this.state = ArenaState.FREE;
     }
 
     public String getArenaName() {
-        return arenaName;
+        return name;
     }
 
     public ArenaDifficulty getDifficulty() {
         return difficulty;
     }
 
-    public int getWavesMax() {
-        return wavesMax;
+    public int getMaxWaves() {
+        return maxWaves;
     }
 
     public ArenaState getArenaState() {
-        return arenaState;
+        return state;
     }
 
     public List<Location> getMobsSpawn() {
@@ -72,11 +74,11 @@ public class Arena {
     }
 
     public void setArenaName(String arenaName) {
-        this.arenaName = arenaName;
+        this.name = arenaName;
     }
 
     public void setArenaState(ArenaState arenaState) {
-        this.arenaState = arenaState;
+        this.state = arenaState;
     }
 
     public void setBossName(String bossName) {
@@ -99,11 +101,19 @@ public class Arena {
         this.playersSpawn = playersSpawn;
     }
 
-    public void setWavesMax(int wavesMax) {
-        this.wavesMax = wavesMax;
+    public void setMaxWaves(int maxWaves) {
+        this.maxWaves = maxWaves;
     }
 
     public void addPlayers(List<UUID> players) {
         this.players.addAll(players);
+    }
+
+    public int getActualWave() {
+        return actualWave;
+    }
+
+    public void setActualWave(int actualWave) {
+        this.actualWave = actualWave;
     }
 }

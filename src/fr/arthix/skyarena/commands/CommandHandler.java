@@ -2,6 +2,8 @@ package fr.arthix.skyarena.commands;
 
 import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.commands.group.*;
+import fr.arthix.skyarena.commands.skyarena.SkyarenaCreateCommand;
+import fr.arthix.skyarena.commands.skyarena.SkyarenaWandCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -24,14 +26,19 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
             commands.put("leave", new GroupLeaveCommand(plugin));
             commands.put("refuse", new GroupRefuseCommand(plugin));
         } else if (commandName.equalsIgnoreCase("skyarena")) {
-
+            commands.put("create", new SkyarenaCreateCommand(plugin));
+            commands.put("wand", new SkyarenaWandCommand(plugin));
         }
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("Utilisation : /group <create/delete/info/invite/join/kick/leave/refuse>");
+            if (command.getName().equalsIgnoreCase("group")) {
+                sender.sendMessage("Utilisation : /group <create/delete/info/invite/join/kick/leave/refuse>");
+            } else if (command.getName().equalsIgnoreCase("skyarena")) {
+                sender.sendMessage("Utilisation : /skyarena <create/wand>");
+            }
             return true;
         }
         String name = args[0];

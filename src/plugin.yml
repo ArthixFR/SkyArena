@@ -1,6 +1,6 @@
 name: SkyArena
 author: Arthix
-version: 0.1-PRE-ALPHA-DEV-SNAPSHOT-BLEEDING
+version: 0.2-PRE-ALPHA-DEV-SNAPSHOT
 main: fr.arthix.skyarena.SkyArena
 commands:
     skyarena:
