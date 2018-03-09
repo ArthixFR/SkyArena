@@ -2,8 +2,8 @@ package fr.arthix.skyarena.commands;
 
 import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.commands.group.*;
-import fr.arthix.skyarena.commands.skyarena.SkyarenaCreateCommand;
-import fr.arthix.skyarena.commands.skyarena.SkyarenaWandCommand;
+import fr.arthix.skyarena.commands.skyarena.*;
+import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -28,6 +28,9 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
         } else if (commandName.equalsIgnoreCase("skyarena")) {
             commands.put("create", new SkyarenaCreateCommand(plugin));
             commands.put("wand", new SkyarenaWandCommand(plugin));
+            commands.put("setplayerspawn", new SkyarenaSetPSpawnCommand(plugin));
+            commands.put("setmobspawn", new SkyarenaSetMSpawnCommand(plugin));
+            commands.put("info", new SkyarenaInfoCommand(plugin));
         }
     }
 
@@ -35,9 +38,9 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (args.length < 1) {
             if (command.getName().equalsIgnoreCase("group")) {
-                sender.sendMessage("Utilisation : /group <create/delete/info/invite/join/kick/leave/refuse>");
+                sender.sendMessage(ChatUtils.PLUGIN_PREFIX + "Utilisation : /group <create/delete/info/invite/join/kick/leave/refuse>");
             } else if (command.getName().equalsIgnoreCase("skyarena")) {
-                sender.sendMessage("Utilisation : /skyarena <create/wand>");
+                sender.sendMessage(ChatUtils.PLUGIN_PREFIX + "Utilisation : /skyarena <create/wand/setplayerspawn/setmobspawn/info>");
             }
             return true;
         }
@@ -46,24 +49,24 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
             final CommandExecutor commandExecutor = commands.get(name);
 
             if (commandExecutor.getPermission() != null && !sender.hasPermission(commandExecutor.getPermission())) {
-                sender.sendMessage("§cVous n'avez pas la permission d'executer cette commande !");
+                sender.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez pas la permission d'executer cette commande !");
                 return true;
             }
 
             if (!commandExecutor.isBoth()) {
                 if (commandExecutor.isConsole() && sender instanceof Player) {
-                    sender.sendMessage("§cCette commande ne s'execute que via la console !");
+                    sender.sendMessage(ChatUtils.ERROR_PREFIX + "Cette commande ne s'execute que via la console !");
                     return true;
                 }
 
                 if (commandExecutor.isPlayer() && sender instanceof ConsoleCommandSender) {
-                    sender.sendMessage("§cCette commande ne s'execute que via un joueur !");
+                    sender.sendMessage(ChatUtils.ERROR_PREFIX + "Cette commande ne s'execute que via un joueur !");
                     return true;
                 }
             }
 
             if (commandExecutor.getLength() > args.length) {
-                sender.sendMessage("Utilisation : " + commandExecutor.getUsage());
+                sender.sendMessage(ChatUtils.PLUGIN_PREFIX + "Utilisation : " + commandExecutor.getUsage());
                 return true;
             }
 

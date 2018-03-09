@@ -2,6 +2,8 @@ package fr.arthix.skyarena.arena;
 
 import org.bukkit.Location;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,19 +23,21 @@ public class Arena {
      */
 
     private String name;
-    private List<UUID> players;
-    private List<Location> playersSpawn;
-    private List<Location> mobsSpawn;
+    private List<UUID> players = new ArrayList<>();
+    private Collection<Location> playersSpawn = new ArrayList<>();
+    private List<Location> mobsSpawn = new ArrayList<>();
+    private Location border1;
+    private Location border2;
     private int maxWaves;
     private int actualWave;
     private String bossName;
     private ArenaDifficulty difficulty;
     private ArenaState state;
 
-    public Arena(String arenaName, List<Location> playersSpawn, List<Location> mobsSpawn, int maxWaves, String bossName, ArenaDifficulty difficulty) {
+    public Arena(String arenaName, Location border1, Location border2, int maxWaves, String bossName, ArenaDifficulty difficulty) {
         this.name = arenaName;
-        this.playersSpawn = playersSpawn;
-        this.mobsSpawn = mobsSpawn;
+        this.border1 = border1;
+        this.border2 = border2;
         this.maxWaves = maxWaves;
         this.actualWave = 0;
         this.bossName = bossName;
@@ -61,7 +65,7 @@ public class Arena {
         return mobsSpawn;
     }
 
-    public List<Location> getPlayersSpawn() {
+    public Collection<Location> getPlayersSpawn() {
         return playersSpawn;
     }
 
@@ -71,6 +75,17 @@ public class Arena {
 
     public List<UUID> getPlayers() {
         return players;
+    }
+
+    public int getActualWave() {
+        return actualWave;
+    }
+
+    public List<Location> getBorder() {
+        List<Location> locations = new ArrayList<>();
+        locations.add(border1);
+        locations.add(border2);
+        return locations;
     }
 
     public void setArenaName(String arenaName) {
@@ -105,15 +120,19 @@ public class Arena {
         this.maxWaves = maxWaves;
     }
 
+    public void setActualWave(int actualWave) {
+        this.actualWave = actualWave;
+    }
+
     public void addPlayers(List<UUID> players) {
         this.players.addAll(players);
     }
 
-    public int getActualWave() {
-        return actualWave;
+    public void addPlayerSpawn(Location loc) {
+        this.playersSpawn.add(loc);
     }
 
-    public void setActualWave(int actualWave) {
-        this.actualWave = actualWave;
+    public void addMobsSpawn(Location loc) {
+        this.mobsSpawn.add(loc);
     }
 }

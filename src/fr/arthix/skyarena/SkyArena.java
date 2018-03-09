@@ -21,8 +21,6 @@ public class SkyArena extends JavaPlugin {
     private GroupManager groupManager;
     private ArenaManager arenaManager;
 
-    public static List<Location> arenaCreationLocation = new ArrayList<>(); // SI DEUX MONGOLES FONT UNE ARENE EN MEME TEMPS FAIRE UE HASHMAP :)
-
     public void onEnable() {
         getLogger().log(Level.INFO, "Loading SkyArena...");
         instance = this;
@@ -37,7 +35,7 @@ public class SkyArena extends JavaPlugin {
 
         getLogger().log(Level.INFO, "Loading events...");
         PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new CreateArenaPositionEvent(), this);
+        pm.registerEvents(new CreateArenaPositionEvent(this), this);
 
         getLogger().log(Level.INFO, "SkyArena loaded !");
     }

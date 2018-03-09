@@ -1,10 +1,12 @@
 package fr.arthix.skyarena.commands.skyarena;
 
 import fr.arthix.skyarena.SkyArena;
+import fr.arthix.skyarena.arena.Arena;
 import fr.arthix.skyarena.arena.ArenaDifficulty;
 import fr.arthix.skyarena.arena.ArenaManager;
 import fr.arthix.skyarena.commands.CommandExecutor;
 import fr.arthix.skyarena.groups.GroupManager;
+import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,8 +24,7 @@ public class SkyarenaCreateCommand extends CommandExecutor {
 
     // TODO: FAIRE LA COMMANDE /skyarena setplayerspawn & /skyarena setmobspawn
 
-    private GroupManager groupManager; // USELESS
-    private ArenaManager arenaManager; // USELESS
+    private ArenaManager arenaManager;
 
     public SkyarenaCreateCommand(SkyArena plugin) {
         setConsole(false);
@@ -32,8 +33,7 @@ public class SkyarenaCreateCommand extends CommandExecutor {
         setLength(5);
         setPermission("skyarena.admin.create");
         setUsage("/skyarena create <maxWaves> <bossname> <difficulty> <nom>");
-        groupManager = plugin.getGroupManager(); // USELESS
-        arenaManager = plugin.getArenaManager(); // USELESS
+        arenaManager = plugin.getArenaManager();
     }
 
     @Override
@@ -43,15 +43,20 @@ public class SkyarenaCreateCommand extends CommandExecutor {
         String bossname = args[2];
         String difficultyStr = args[3];
         ArenaDifficulty difficulty;
-        String name = argsToString(args, 5);
+        String name = argsToString(args, 4);
 
-        if (SkyArena.arenaCreationLocation.size() != 2) {
-            p.sendMessage("Vous devez définir la zone de l'arène ! (/skyarena wand)");
+        if (!arenaManager.arenaCreationLocation.containsKey(p.getUniqueId())) {
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous devez définir la zone de l'arène ! (/skyarena wand)");
+            return;
+        }
+
+        if (arenaManager.arenaCreationLocation.get(p.getUniqueId()).size() != 2) {
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous devez définir la zone de l'arène ! (/skyarena wand)");
             return;
         }
 
         if (!(maxWaves > 0)) {
-            p.sendMessage("Le nombre de vagues maximum est incorrect !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Le nombre de vagues maximum est incorrect !");
             return;
         }
 
@@ -71,11 +76,14 @@ public class SkyarenaCreateCommand extends CommandExecutor {
                 difficulty = ArenaDifficulty.EXTREME;
                 break;
             default:
-                p.sendMessage("La difficulté est incorrecte ! Disponible : easy, medium, hard, extreme");
+                p.sendMessage(ChatUtils.ERROR_PREFIX + "La difficulté est incorrecte ! Disponible : easy, medium, hard, extreme");
                 return;
         }
 
-        // TODO: CREER L'ARENE
+        System.out.println(arenaManager.arenaCreationLocation.get(p.getUniqueId()).size() + " : " + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0) + ";" + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1));
+        arenaManager.createArena(name, arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0), arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1), maxWaves, bossname, difficulty);
+        arenaManager.arenaCreationLocation.remove(p.getUniqueId());
+        p.sendMessage(ChatUtils.PLUGIN_PREFIX + "Arène créée avec succès ! N'oubliez pas de définir les spawn de joueurs et mobs avec §f/skyarena setplayerspawn §7& §f/skyarena setmobspawn §7!");
 
     }
 
