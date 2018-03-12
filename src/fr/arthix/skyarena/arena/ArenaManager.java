@@ -9,7 +9,7 @@ public final class ArenaManager {
 
     private List<Arena> arenas = new ArrayList<>();
 
-    public Map<UUID, List<Location>> arenaCreationLocation = new HashMap<>(); // SI DEUX MONGOLES FONT UNE ARENE EN MEME TEMPS FAIRE UNE HASHMAP :)
+    public Map<UUID, List<Location>> arenaCreationLocation = new HashMap<>();
 
     public void createArena(String name, Location border1, Location border2, int wavesMax, String bossName, ArenaDifficulty difficulty) {
         arenas.add(new Arena(name, border1, border2, wavesMax, bossName, difficulty));

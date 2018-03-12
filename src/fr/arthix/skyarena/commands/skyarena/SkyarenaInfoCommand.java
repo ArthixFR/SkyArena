@@ -43,8 +43,8 @@ public class SkyarenaInfoCommand extends CommandExecutor {
             p.sendMessage("§7- Position :");
             p.sendMessage("§7  - Position 1 : X:§f" + pos1.getBlockX() + "§7 Y:§f" + pos1.getBlockY() + "§7 Z:§f" + pos1.getBlockZ());
             p.sendMessage("§7  - Position 2 : X:§f" + pos2.getBlockX() + "§7 Y:§f" + pos2.getBlockY() + "§7 Z:§f" + pos2.getBlockZ());
-            p.sendMessage("§7- Spawn joueurs : " + (arena.getPlayersSpawn() == null ? "§cAucun" : arena.getPlayersSpawn().size()));
-            p.sendMessage("§7- Spawn mobs : " + (arena.getMobsSpawn() == null ? "§cAucun" : arena.getMobsSpawn().size()));
+            p.sendMessage("§7- Spawn joueurs : " + arena.getPlayersSpawn().size());
+            p.sendMessage("§7- Spawn mobs : " + arena.getMobsSpawn().size());
             p.sendMessage("§7- État : " + arena.getArenaState().getName());
             p.sendMessage("§7- Difficulté : " + arena.getDifficulty().getName());
             p.sendMessage("§7- Vagues max : " + arena.getMaxWaves());

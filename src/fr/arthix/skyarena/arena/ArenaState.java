@@ -1,6 +1,7 @@
 package fr.arthix.skyarena.arena;
 
 public enum ArenaState {
+    CLOSE("Fermé"),
     FREE("Libre"),
     IN_PROGRESS("En cours"),
     BOSS("Boss"),

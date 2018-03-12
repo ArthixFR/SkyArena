@@ -15,6 +15,9 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
 
     private HashMap<String, CommandExecutor> commands = new HashMap<>();
 
+    // TODO: AJOUTER LA COMMANDE "/skyarena setbossspawn"
+    // TODO: AUTO-COMPLETE
+
     public CommandHandler(String commandName, SkyArena plugin) {
         if (commandName.equalsIgnoreCase("group")) {
             commands.put("create", new GroupCreateCommand(plugin));
@@ -31,6 +34,7 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
             commands.put("setplayerspawn", new SkyarenaSetPSpawnCommand(plugin));
             commands.put("setmobspawn", new SkyarenaSetMSpawnCommand(plugin));
             commands.put("info", new SkyarenaInfoCommand(plugin));
+            commands.put("gui", new SkyarenaGuiCommand(plugin));
         }
     }
 
