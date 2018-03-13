@@ -39,7 +39,7 @@ public class CreateArenaPositionEvent implements Listener {
                             } else {
                                 arenaManager.arenaCreationLocation.get(uuid).set(0, bLoc);
                             }
-                            System.out.println(arenaManager.arenaCreationLocation.get(uuid).get(0));
+                            //System.out.println(arenaManager.arenaCreationLocation.get(uuid).get(0));
                             e.getPlayer().sendMessage("Position 1 définie (X:" + bLoc.getBlockX() + " Y:" + bLoc.getBlockY() + " Z:" + bLoc.getBlockZ() + ")");
                             e.setCancelled(true);
                         } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -51,7 +51,7 @@ public class CreateArenaPositionEvent implements Listener {
                             } else {
                                 arenaManager.arenaCreationLocation.get(uuid).set(1, bLoc);
                             }
-                            System.out.println(arenaManager.arenaCreationLocation.get(uuid).get(1));
+                            //System.out.println(arenaManager.arenaCreationLocation.get(uuid).get(1));
                             e.getPlayer().sendMessage("Position 2 définie (X:" + bLoc.getBlockX() + " Y:" + bLoc.getBlockY() + " Z:" + bLoc.getBlockZ() + ")");
                             e.setCancelled(true);
                         }

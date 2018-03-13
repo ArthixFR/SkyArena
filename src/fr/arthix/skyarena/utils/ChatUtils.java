@@ -2,7 +2,8 @@ package fr.arthix.skyarena.utils;
 
 public class ChatUtils {
     public static String ERROR_PREFIX = "§c§lErreur §8§l>> §c";
-    public static String PLUGIN_PREFIX = "§6§lSkyArena §8§l>> §7";
+    public static String SKYARENA_PREFIX = "§6§lSkyArena §8§l>> §7";
+    public static String GROUP_PREFIX = "§b§lGroupe §8§l>> §7";
 
 
     /*

@@ -5,6 +5,7 @@ import fr.arthix.skyarena.commands.CommandExecutor;
 import fr.arthix.skyarena.groups.Group;
 import fr.arthix.skyarena.groups.GroupManager;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,32 +25,34 @@ public class GroupKickCommand extends CommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player) sender;
-        if (!groupManager.hasGroup(p)) {
+        if (!groupManager.hasGroup(p.getUniqueId())) {
             p.sendMessage("Vous n'avez pas de groupe !");
             return;
         }
 
-        Group group = groupManager.getGroup(p);
+        Group group = groupManager.getGroup(p.getUniqueId());
 
         if (group.isOwner(p.getUniqueId())) {
             if (args.length < 2) {
                 p.sendMessage("Merci de préciser un joueur !");
                 return;
             }
-            Player pI = Bukkit.getPlayer(args[1]);
-            if (pI == null) {
+            OfflinePlayer pOff = Bukkit.getOfflinePlayer(args[1]);
+            if (pOff == null) {
                 p.sendMessage("Joueur introuvable !");
                 return;
             }
-            if (groupManager.hasGroup(pI)) {
-                if (groupManager.getGroup(pI) == group) {
-                    if (pI.getUniqueId() == p.getUniqueId()) {
+            if (groupManager.hasGroup(pOff.getUniqueId())) {
+                if (groupManager.getGroup(pOff.getUniqueId()) == group) {
+                    if (pOff.getUniqueId() == p.getUniqueId()) {
                         p.sendMessage("Vous ne pouvez pas vous exclure !");
                         return;
                     }
-                    group.removeMember(pI.getUniqueId());
-                    pI.sendMessage(Bukkit.getPlayer(group.getOwner()).getName() + " vous a exclu du groupe !");
-                    group.sendMessage(pI.getName() + " a été exclu du groupe !");
+                    group.removeMember(pOff.getUniqueId());
+                    if (pOff.isOnline()) {
+                        pOff.getPlayer().sendMessage(Bukkit.getPlayer(group.getOwner()).getName() + " vous a exclu du groupe !");
+                    }
+                    group.sendMessage(pOff.getName() + " a été exclu du groupe !");
                 } else {
                     p.sendMessage("Ce joueur n'est pas dans votre groupe !");
                 }

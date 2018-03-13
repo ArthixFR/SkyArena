@@ -1,6 +1,6 @@
 package fr.arthix.skyarena.gui;
 
-import fr.arthix.skyarena.SkyArena;
+import fr.arthix.skyarena.arena.ArenaDifficulty;
 import fr.arthix.skyarena.utils.ItemFormat;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -8,56 +8,55 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class GuiMain extends GuiBase {
+public class GuiSelectArena extends GuiBase {
 
     private GuiManager guiManager;
 
-    public GuiMain(GuiManager guiManager) {
+    public GuiSelectArena(GuiManager guiManager) {
         this.guiManager = guiManager;
     }
 
     @Override
     public int size() {
-        return 5 * 9;
+       return 5 * 9;
     }
 
     @Override
     public boolean showReturnButton() {
-        return false;
+        return true;
     }
 
     @Override
     public String title() {
-        return "Menu principal";
+        return "Selection de l'arène";
     }
 
     @Override
     public String name() {
-        return "main";
+        return "arena_select";
     }
 
     @Override
     public String returnGui() {
-        return null;
+        return "main";
     }
 
     @Override
     public void setContent(Inventory inv, Object arg) {
-        inv.setItem(20, ItemFormat.setItemName("§b§lJouer", Material.CONCRETE, 1, (byte)3, null, false));
-        inv.setItem(22, ItemFormat.setItemName("§6§lClassement", Material.TOTEM, 1, (byte)0, null, false));
-        inv.setItem(24, ItemFormat.setItemName("§e§lMes stats", Material.CONCRETE, 1, (byte)4, null, false));
-
+        inv.setItem(20, ItemFormat.setItemName("Arène facile", Material.SKULL_ITEM, 1, (byte)0, null, false));
+        inv.setItem(24, ItemFormat.setItemName("Arène difficile", Material.SKULL_ITEM, 1, (byte)1, null, false));
     }
 
     @Override
     public void interact(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
         ItemStack is = e.getCurrentItem();
-        if (is.getType() == Material.CONCRETE && is.getDurability() == 3) {
-            guiManager.openGui(p, "arena_select", null);
-        } else if (is.getType() == Material.TOTEM) {
-            p.sendMessage("§cSoon...");
-            //guiManager.openGui(p, "leaderboard");
+        if (is.getType() == Material.SKULL_ITEM) {
+            if (is.getDurability() == 0) {
+                guiManager.openGui(p, "arenas", ArenaDifficulty.EASY);
+            } else if (is.getDurability() == 1) {
+                guiManager.openGui(p, "arenas", ArenaDifficulty.HARD);
+            }
         }
     }
 }

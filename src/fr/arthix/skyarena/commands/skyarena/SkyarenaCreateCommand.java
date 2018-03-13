@@ -1,11 +1,9 @@
 package fr.arthix.skyarena.commands.skyarena;
 
 import fr.arthix.skyarena.SkyArena;
-import fr.arthix.skyarena.arena.Arena;
 import fr.arthix.skyarena.arena.ArenaDifficulty;
 import fr.arthix.skyarena.arena.ArenaManager;
 import fr.arthix.skyarena.commands.CommandExecutor;
-import fr.arthix.skyarena.groups.GroupManager;
 import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -80,10 +78,10 @@ public class SkyarenaCreateCommand extends CommandExecutor {
                 return;
         }
 
-        System.out.println(arenaManager.arenaCreationLocation.get(p.getUniqueId()).size() + " : " + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0) + ";" + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1));
+        //System.out.println(arenaManager.arenaCreationLocation.get(p.getUniqueId()).size() + " : " + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0) + ";" + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1));
         arenaManager.createArena(name, arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0), arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1), maxWaves, bossname, difficulty);
         arenaManager.arenaCreationLocation.remove(p.getUniqueId());
-        p.sendMessage(ChatUtils.PLUGIN_PREFIX + "Arène créée avec succès ! N'oubliez pas de définir les spawn de joueurs et mobs avec §f/skyarena setplayerspawn §7& §f/skyarena setmobspawn §7!");
+        p.sendMessage(ChatUtils.SKYARENA_PREFIX + "Arène créée avec succès ! N'oubliez pas de définir les spawn de joueurs et mobs avec §f/skyarena setplayerspawn §7& §f/skyarena setmobspawn §7!");
 
     }
 
@@ -91,7 +89,7 @@ public class SkyarenaCreateCommand extends CommandExecutor {
         String str = "";
         for (int i = start; i < args.length; i++) {
             String arg = "";
-            if ((i - 1) != args.length) {
+            if ((i + 1) != args.length) {
                 arg = args[i] + " ";
             } else {
                 arg = args[i];

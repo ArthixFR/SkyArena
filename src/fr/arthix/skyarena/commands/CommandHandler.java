@@ -35,6 +35,7 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
             commands.put("setmobspawn", new SkyarenaSetMSpawnCommand(plugin));
             commands.put("info", new SkyarenaInfoCommand(plugin));
             commands.put("gui", new SkyarenaGuiCommand(plugin));
+            commands.put("give", new SkyarenaGiveCommand(plugin));
         }
     }
 
@@ -42,9 +43,9 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (args.length < 1) {
             if (command.getName().equalsIgnoreCase("group")) {
-                sender.sendMessage(ChatUtils.PLUGIN_PREFIX + "Utilisation : /group <create/delete/info/invite/join/kick/leave/refuse>");
+                sender.sendMessage(ChatUtils.SKYARENA_PREFIX + "Utilisation : /group <create/delete/info/invite/join/kick/leave/refuse>");
             } else if (command.getName().equalsIgnoreCase("skyarena")) {
-                sender.sendMessage(ChatUtils.PLUGIN_PREFIX + "Utilisation : /skyarena <create/wand/setplayerspawn/setmobspawn/info>");
+                sender.sendMessage(ChatUtils.SKYARENA_PREFIX + "Utilisation : /skyarena <create/wand/setplayerspawn/setmobspawn/info/give>");
             }
             return true;
         }
@@ -70,7 +71,7 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
             }
 
             if (commandExecutor.getLength() > args.length) {
-                sender.sendMessage(ChatUtils.PLUGIN_PREFIX + "Utilisation : " + commandExecutor.getUsage());
+                sender.sendMessage(ChatUtils.SKYARENA_PREFIX + "Utilisation : " + commandExecutor.getUsage());
                 return true;
             }
 

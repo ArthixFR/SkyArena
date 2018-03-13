@@ -28,7 +28,7 @@ public class SkyarenaSetPSpawnCommand extends CommandExecutor {
         Arena arena = arenaManager.getArena(p.getLocation());
         if (arena != null) {
             arena.addPlayerSpawn(p.getLocation());
-            p.sendMessage(ChatUtils.PLUGIN_PREFIX + "Point de spawn de joueur défini avec succès !");
+            p.sendMessage(ChatUtils.SKYARENA_PREFIX + "Point de spawn de joueur défini avec succès !");
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous devez être dans une arène pour exécuter cette commande !");
         }

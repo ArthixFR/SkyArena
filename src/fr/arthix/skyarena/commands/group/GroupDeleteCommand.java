@@ -22,9 +22,9 @@ public class GroupDeleteCommand extends CommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player) sender;
-        if (groupManager.hasGroup(p)) {
-            if (groupManager.getGroup(p).isOwner(p.getUniqueId())) {
-                groupManager.removeGroup(groupManager.getGroup(p));
+        if (groupManager.hasGroup(p.getUniqueId())) {
+            if (groupManager.getGroup(p.getUniqueId()).isOwner(p.getUniqueId())) {
+                groupManager.removeGroup(groupManager.getGroup(p.getUniqueId()));
             } else {
                 p.sendMessage("Vous n'êtes pas le propriétaire du groupe !");
             }

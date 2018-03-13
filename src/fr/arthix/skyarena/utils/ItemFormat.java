@@ -2,19 +2,26 @@ package fr.arthix.skyarena.utils;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import fr.arthix.skyarena.arena.Arena;
+import fr.arthix.skyarena.arena.ArenaState;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Skull;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class ItemFormat {
-    public static ItemStack setItemName(String customName, Material material, int amount, byte damage, List lore) {
+    public static ItemStack setItemName(String customName, Material material, int amount, byte damage, List lore, boolean glow) {
         ItemStack is = new ItemStack(material, amount, damage);
         ItemMeta im = is.getItemMeta();
         if (customName == null) {
@@ -25,6 +32,10 @@ public class ItemFormat {
         im.setLore(null);
         if (lore != null) {
             im.setLore(lore);
+        }
+        if (glow) {
+            im.addEnchant(Enchantment.DURABILITY, 1, false);
+            im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         is.setItemMeta(im);
         return is;
@@ -76,6 +87,61 @@ public class ItemFormat {
             e.printStackTrace();
         }
         is.setItemMeta(im);
+        return is;
+    }
+
+    public static ItemStack arenaItem(Arena arena) { // TODO: CA RISQUE DE CRASH !
+        ArenaState status = arena.getArenaState();
+        Material material;
+        List<String> lore = new ArrayList<>();
+        byte metadata;
+        switch (status) {
+            case FREE:
+                material = Material.CONCRETE;
+                metadata = 5;
+                break;
+            case CLOSE:
+                material = Material.CONCRETE;
+                metadata = 14;
+                break;
+            default:
+                material = Material.SKULL_ITEM;
+                metadata = 3;
+                break;
+        }
+
+        ItemStack is = new ItemStack(material, 1, metadata);
+
+        if (material == Material.SKULL_ITEM) {
+            SkullMeta sm = (SkullMeta) is.getItemMeta();
+            lore.add("Status : " + arena.getArenaState().getName());
+            if (status == ArenaState.IN_PROGRESS) {
+                lore.add("Vagues complétées : " + arena.getActualWave() + " sur " + arena.getMaxWaves());
+            } else if (status == ArenaState.BOSS) {
+                lore.add("Boss : " + arena.getBossName());
+            }
+            lore.add("Joueurs : ");
+            for (UUID uuid : arena.getPlayers()) {
+                lore.add(" - " + Bukkit.getPlayer(uuid).getName());
+            }
+
+            sm.setOwningPlayer(Bukkit.getOfflinePlayer(arena.getPlayers().get(0)));
+            sm.setDisplayName(arena.getArenaName());
+            sm.setLore(lore);
+
+            is.setItemMeta(sm);
+        } else {
+            ItemMeta im = is.getItemMeta();
+            if (metadata == 5) {
+                lore.add("§a§lLibre !");
+            } else if (metadata == 14) {
+                lore.add("§c§lFermée !");
+            }
+            im.setDisplayName(arena.getArenaName());
+            im.setLore(lore);
+
+            is.setItemMeta(im);
+        }
         return is;
     }
 }

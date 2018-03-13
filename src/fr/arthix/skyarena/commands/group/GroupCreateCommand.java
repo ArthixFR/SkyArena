@@ -22,7 +22,7 @@ public class GroupCreateCommand extends CommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player) sender;
-        if (!groupManager.hasGroup(p)) {
+        if (!groupManager.hasGroup(p.getUniqueId())) {
             groupManager.createGroup(p);
             p.sendMessage("Groupe créée !");
         } else {

@@ -27,8 +27,8 @@ public class GroupInfoCommand extends CommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player) sender;
-        if (groupManager.hasGroup(p)) {
-            Group group = groupManager.getGroup(p);
+        if (groupManager.hasGroup(p.getUniqueId())) {
+            Group group = groupManager.getGroup(p.getUniqueId());
             p.sendMessage("Owner : " + Bukkit.getOfflinePlayer(group.getOwner()).getName());
             List<UUID> members = group.getMembers();
             if (members.isEmpty()) {

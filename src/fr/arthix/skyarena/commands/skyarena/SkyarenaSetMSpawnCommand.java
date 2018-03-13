@@ -28,7 +28,7 @@ public class SkyarenaSetMSpawnCommand extends CommandExecutor {
         Arena arena = arenaManager.getArena(p.getLocation());
         if (arena != null) {
             arena.addMobsSpawn(p.getLocation());
-            p.sendMessage(ChatUtils.PLUGIN_PREFIX + "Point de spawn de mob défini avec succès !");
+            p.sendMessage(ChatUtils.SKYARENA_PREFIX + "Point de spawn de mob défini avec succès !");
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous devez être dans une arène pour exécuter cette commande !");
         }

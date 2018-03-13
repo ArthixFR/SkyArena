@@ -35,13 +35,13 @@ public class GroupInviteCommand extends CommandExecutor {
         }
 
         Group group;
-        if ((group = groupManager.getGroup(p)) != null) {
+        if ((group = groupManager.getGroup(p.getUniqueId())) != null) {
             if (group.isOwner(p.getUniqueId())) {
-                if (groupManager.hasGroup(pI)) {
+                if (groupManager.hasGroup(pI.getUniqueId())) {
                     p.sendMessage("Ce joueur est déjà dans un groupe !");
                     return;
                 }
-                groupManager.invitePlayer(pI, groupManager.getGroup(p));
+                groupManager.invitePlayer(pI, groupManager.getGroup(p.getUniqueId()));
                 return;
             } else {
                 p.sendMessage("Vous n'êtes pas le propriétaire du groupe !");

@@ -11,8 +11,8 @@ public final class GroupManager {
     private List<Group> groups = new ArrayList<>();
     private Map<UUID, Group> invites = new HashMap<>();
 
-    public boolean hasGroup(Player p) {
-        return groups.stream().findFirst().filter((g) -> g.isMember(p.getUniqueId())).isPresent();
+    public boolean hasGroup(UUID uuid) {
+        return groups.stream().findFirst().filter((g) -> g.isMember(uuid)).isPresent();
     }
 
     public Group createGroup(Player p) {
@@ -31,18 +31,18 @@ public final class GroupManager {
         }
     }
 
-    public Group getGroup(Player p) {
-        return groups.stream().findFirst().filter((g) -> g.isMember(p.getUniqueId())).orElse(null);
+    public Group getGroup(UUID uuid) {
+        return groups.stream().findFirst().filter((g) -> g.isMember(uuid)).orElse(null);
     }
 
-    public Group hasInvite(Player p) {
-        Map.Entry<UUID, Group> invite = invites.entrySet().stream().findFirst().filter((g) -> g.getKey().equals(p.getUniqueId())).orElse(null);
+    public Group hasInvite(UUID uuid) {
+        Map.Entry<UUID, Group> invite = invites.entrySet().stream().findFirst().filter((g) -> g.getKey().equals(uuid)).orElse(null);
         return invite != null ? invite.getValue() : null;
     }
 
     public void invitePlayer(Player p, Group g) {
         Player owner = Bukkit.getPlayer(g.getOwner());
-        if (hasInvite(p) != null) {
+        if (hasInvite(p.getUniqueId()) != null) {
             owner.sendMessage(p.getName() + " a déjà été invité dans un groupe !");
         } else {
             invites.put(p.getUniqueId(), g);
@@ -66,12 +66,12 @@ public final class GroupManager {
     }
 
     public void acceptInvite(Player p) {
-        Group groupInvited = hasInvite(p);
+        Group groupInvited = hasInvite(p.getUniqueId());
         if (groupInvited == null) {
             p.sendMessage("Vous n'avez pas d'invitation !");
             return;
         }
-        if (hasGroup(p)) {
+        if (hasGroup(p.getUniqueId())) {
             p.sendMessage("Vous êtes déjà dans un groupe !");
             return;
         }
@@ -82,12 +82,12 @@ public final class GroupManager {
     }
 
     public void refuseInvite(Player p) {
-        Group groupInvited = hasInvite(p);
+        Group groupInvited = hasInvite(p.getUniqueId());
         if (groupInvited == null) {
             p.sendMessage("Vous n'avez pas d'invitation !");
             return;
         }
-        if (hasGroup(p)) {
+        if (hasGroup(p.getUniqueId())) {
             p.sendMessage("Vous êtes déjà dans un groupe !");
             return;
         }

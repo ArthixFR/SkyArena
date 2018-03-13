@@ -19,8 +19,8 @@ public class GroupLeaveCommand extends CommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player) sender;
-        if (groupManager.hasGroup(p)) {
-            Group group = groupManager.getGroup(p);
+        if (groupManager.hasGroup(p.getUniqueId())) {
+            Group group = groupManager.getGroup(p.getUniqueId());
             if (group.isOwner(p.getUniqueId())) {
                 p.sendMessage("Vous ne pouvez pas quitter votre propre groupe !");
             } else {
