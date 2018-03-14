@@ -1,6 +1,9 @@
 package fr.arthix.skyarena.arena;
 
+import fr.arthix.skyarena.titleapi.TitleAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +27,7 @@ public class Arena {
 
     private String name;
     private List<UUID> players = new ArrayList<>();
-    private Collection<Location> playersSpawn = new ArrayList<>();
+    private List<Location> playersSpawn = new ArrayList<>();
     private List<Location> mobsSpawn = new ArrayList<>();
     private Location border1;
     private Location border2;
@@ -33,6 +36,7 @@ public class Arena {
     private String bossName;
     private ArenaDifficulty difficulty;
     private ArenaState state;
+    private int mobWave;
 
     public Arena(String arenaName, Location border1, Location border2, int maxWaves, String bossName, ArenaDifficulty difficulty) {
         this.name = arenaName;
@@ -43,6 +47,7 @@ public class Arena {
         this.bossName = bossName;
         this.difficulty = difficulty;
         this.state = ArenaState.FREE;
+        this.mobWave = -1;
     }
 
     public String getArenaName() {
@@ -65,7 +70,7 @@ public class Arena {
         return mobsSpawn;
     }
 
-    public Collection<Location> getPlayersSpawn() {
+    public List<Location> getPlayersSpawn() {
         return playersSpawn;
     }
 
@@ -105,7 +110,9 @@ public class Arena {
     }
 
     public void setMobsSpawn(List<Location> mobsSpawn) {
-        this.mobsSpawn = mobsSpawn;
+        if (mobsSpawn != null) {
+            this.mobsSpawn = mobsSpawn;
+        }
     }
 
     public void setPlayers(List<UUID> players) {
@@ -113,7 +120,9 @@ public class Arena {
     }
 
     public void setPlayersSpawn(List<Location> playersSpawn) {
-        this.playersSpawn = playersSpawn;
+        if (playersSpawn != null) {
+            this.playersSpawn = playersSpawn;
+        }
     }
 
     public void setMaxWaves(int maxWaves) {
@@ -134,5 +143,22 @@ public class Arena {
 
     public void addMobsSpawn(Location loc) {
         this.mobsSpawn.add(loc);
+    }
+
+    public int getMobWave() {
+        return mobWave;
+    }
+
+    public void setMobWave(int mobWave) {
+        this.mobWave = mobWave;
+    }
+
+    public void sendTitle(String title, String subtitle) {
+        for (UUID uuid : this.getPlayers()) {
+            Player p = Bukkit.getPlayer(uuid);
+            if (p != null) {
+                TitleAPI.sendTitle(p, 10, 20, 10, title, subtitle);
+            }
+        }
     }
 }

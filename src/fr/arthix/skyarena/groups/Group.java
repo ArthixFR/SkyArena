@@ -6,10 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Group {
@@ -59,33 +56,61 @@ public class Group {
     }
 
     public List<UUID> hasKey(ArenaDifficulty arenaDifficulty) {
+        LinkedHashSet<UUID> hashSet = new LinkedHashSet<>();
         List<UUID> noKey = new ArrayList<>();
         for (ItemStack is : Bukkit.getPlayer(owner).getInventory().getStorageContents()) {
             if (is != null && is.getType() != Material.AIR) {
-                if (is.hasItemMeta()) {
+                if (is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
                     if (is.getItemMeta().getDisplayName().equals(arenaDifficulty.getItemKey().getItemMeta().getDisplayName()) && is.getType() == arenaDifficulty.getItemKey().getType()) {
-                        if (noKey.contains(owner)) noKey.remove(owner);
+                        if (noKey.contains(owner)) noKey.remove(owner); System.out.println("Owner have key");
                         break;
                     }
                 }
             }
-            noKey.add(owner);
+            System.out.println("add in list");
+            if (hashSet.add(owner)) noKey.add(owner);
         }
         for (UUID uuid : members) {
             for (ItemStack is : Bukkit.getPlayer(uuid).getInventory().getStorageContents()) {
                 if (is != null && is.getType() != Material.AIR) {
-                    if (is.hasItemMeta()) {
+                    if (is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
                         if (is.getItemMeta().getDisplayName().equals(arenaDifficulty.getItemKey().getItemMeta().getDisplayName()) && is.getType() == arenaDifficulty.getItemKey().getType()) {
-                            if (noKey.contains(uuid)) noKey.remove(uuid);
+                            if (noKey.contains(uuid)) noKey.remove(uuid); System.out.println("member have key");
                             break;
                         }
                     }
                 }
-                noKey.add(uuid);
+                System.out.println("add in list");
+                if (hashSet.add(uuid)) noKey.add(uuid);
             }
 
         }
+        return noKey;
+    }
 
-        return noKey.stream().distinct().collect(Collectors.toList());
+    public void removeKey(ArenaDifficulty difficulty) {
+        for (ItemStack is : Bukkit.getPlayer(owner).getInventory().getStorageContents()) {
+            if (is != null && is.getType() != Material.AIR) {
+                if (is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
+                    if (is.getItemMeta().getDisplayName().equals(difficulty.getItemKey().getItemMeta().getDisplayName()) && is.getType() == difficulty.getItemKey().getType()) {
+                        is.setAmount(is.getAmount() - 1);
+                        break;
+                    }
+                }
+            }
+        }
+        for (UUID uuid : members) {
+            for (ItemStack is : Bukkit.getPlayer(uuid).getInventory().getStorageContents()) {
+                if (is != null && is.getType() != Material.AIR) {
+                    if (is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
+                        if (is.getItemMeta().getDisplayName().equals(difficulty.getItemKey().getItemMeta().getDisplayName()) && is.getType() == difficulty.getItemKey().getType()) {
+                            is.setAmount(is.getAmount() - 1);
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
     }
 }

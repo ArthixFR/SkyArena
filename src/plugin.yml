@@ -2,6 +2,7 @@ name: SkyArena
 author: Arthix
 version: 0.2-PRE-ALPHA-DEV-SNAPSHOT
 main: fr.arthix.skyarena.SkyArena
+depend: [MythicMobs]
 commands:
     skyarena:
     group:

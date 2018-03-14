@@ -12,7 +12,7 @@ public class GuiManager {
     public GuiManager(SkyArena plugin) {
         guis.add(new GuiMain(this));
         guis.add(new GuiSelectArena(this));
-        guis.add(new GuiArenas(this, plugin.getArenaManager(), plugin.getGroupManager()));
+        guis.add(new GuiArenas(plugin));
     }
 
     public void openGui(Player p, String name, Object arg) {

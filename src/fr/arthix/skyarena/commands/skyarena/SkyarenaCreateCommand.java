@@ -4,25 +4,15 @@ import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.arena.ArenaDifficulty;
 import fr.arthix.skyarena.arena.ArenaManager;
 import fr.arthix.skyarena.commands.CommandExecutor;
+import fr.arthix.skyarena.config.ConfigManager;
 import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class SkyarenaCreateCommand extends CommandExecutor {
 
-    /*
-
-    Etapes creation :
-     - Définir la position 1 de l'arène -> /skyarena wand
-     - Definir la position 2 de l'arène -> /skyarena wand
-     - Définir le spawn des joueurs /skyarena setplayerspawn
-     - Définir le spawn des mobs ? ou aléatoire ? /skyarena setmobspawn
-
-     */
-
-    // TODO: FAIRE LA COMMANDE /skyarena setplayerspawn & /skyarena setmobspawn
-
     private ArenaManager arenaManager;
+    private ConfigManager configManager;
 
     public SkyarenaCreateCommand(SkyArena plugin) {
         setConsole(false);
@@ -32,6 +22,7 @@ public class SkyarenaCreateCommand extends CommandExecutor {
         setPermission("skyarena.admin.create");
         setUsage("/skyarena create <maxWaves> <bossname> <difficulty> <nom>");
         arenaManager = plugin.getArenaManager();
+        configManager = plugin.getConfigManager();
     }
 
     @Override
@@ -78,11 +69,16 @@ public class SkyarenaCreateCommand extends CommandExecutor {
                 return;
         }
 
+        if (arenaManager.getArena(name) != null) {
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Ce nom est déjà utilisé !");
+            return;
+        }
+
         //System.out.println(arenaManager.arenaCreationLocation.get(p.getUniqueId()).size() + " : " + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0) + ";" + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1));
+        configManager.createConfig(name, arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0), arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1), maxWaves, bossname, difficulty);
         arenaManager.createArena(name, arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0), arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1), maxWaves, bossname, difficulty);
         arenaManager.arenaCreationLocation.remove(p.getUniqueId());
         p.sendMessage(ChatUtils.SKYARENA_PREFIX + "Arène créée avec succès ! N'oubliez pas de définir les spawn de joueurs et mobs avec §f/skyarena setplayerspawn §7& §f/skyarena setmobspawn §7!");
-
     }
 
     public static String argsToString(String[] args, int start) {
