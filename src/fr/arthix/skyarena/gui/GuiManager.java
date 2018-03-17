@@ -10,12 +10,13 @@ public class GuiManager {
     public List<GuiBase> guis = new ArrayList<>();
 
     public GuiManager(SkyArena plugin) {
-        guis.add(new GuiMain(this));
-        guis.add(new GuiSelectArena(this));
+        guis.add(new GuiMain(plugin, this));
+        guis.add(new GuiSelectArena(plugin, this));
         guis.add(new GuiArenas(plugin));
+        guis.add(new GuiRewards(plugin));
     }
 
-    public void openGui(Player p, String name, Object arg) {
+    public void openGui(Player p, String name, Object... arg) {
         for (GuiBase guiBase : guis) {
             if (guiBase.name().equalsIgnoreCase(name)) {
                 guiBase.openGui(p, arg);

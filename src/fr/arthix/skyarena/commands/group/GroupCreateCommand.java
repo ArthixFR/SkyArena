@@ -3,6 +3,7 @@ package fr.arthix.skyarena.commands.group;
 import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.commands.CommandExecutor;
 import fr.arthix.skyarena.groups.GroupManager;
+import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,9 +25,9 @@ public class GroupCreateCommand extends CommandExecutor {
         Player p = (Player) sender;
         if (!groupManager.hasGroup(p.getUniqueId())) {
             groupManager.createGroup(p);
-            p.sendMessage("Groupe créée !");
+            p.sendMessage(ChatUtils.GROUP_PREFIX + "Groupe créée !");
         } else {
-            p.sendMessage("Tu fais déjà parti d'un groupe !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Tu fais déjà parti d'un groupe !");
         }
     }
 }

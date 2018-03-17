@@ -12,7 +12,8 @@ public class GuiMain extends GuiBase {
 
     private GuiManager guiManager;
 
-    public GuiMain(GuiManager guiManager) {
+    public GuiMain(SkyArena plugin, GuiManager guiManager) {
+        super(plugin);
         this.guiManager = guiManager;
     }
 
@@ -23,6 +24,16 @@ public class GuiMain extends GuiBase {
 
     @Override
     public boolean showReturnButton() {
+        return false;
+    }
+
+    @Override
+    public boolean showLeaveButton() {
+        return true;
+    }
+
+    @Override
+    public boolean refreshGui() {
         return false;
     }
 
@@ -42,7 +53,7 @@ public class GuiMain extends GuiBase {
     }
 
     @Override
-    public void setContent(Inventory inv, Object arg) {
+    public void setContent(Inventory inv, Object... arg) {
         inv.setItem(20, ItemFormat.setItemName("§b§lJouer", Material.CONCRETE, 1, (byte)3, null, false));
         inv.setItem(22, ItemFormat.setItemName("§6§lClassement", Material.TOTEM, 1, (byte)0, null, false));
         inv.setItem(24, ItemFormat.setItemName("§e§lMes stats", Material.CONCRETE, 1, (byte)4, null, false));
@@ -54,7 +65,7 @@ public class GuiMain extends GuiBase {
         Player p = (Player) e.getWhoClicked();
         ItemStack is = e.getCurrentItem();
         if (is.getType() == Material.CONCRETE && is.getDurability() == 3) {
-            guiManager.openGui(p, "arena_select", null);
+            guiManager.openGui(p, "arena_select");
         } else if (is.getType() == Material.TOTEM) {
             p.sendMessage("§cSoon...");
             //guiManager.openGui(p, "leaderboard");

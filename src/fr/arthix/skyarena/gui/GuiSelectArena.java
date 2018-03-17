@@ -1,5 +1,6 @@
 package fr.arthix.skyarena.gui;
 
+import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.arena.ArenaDifficulty;
 import fr.arthix.skyarena.utils.ItemFormat;
 import org.bukkit.Material;
@@ -12,7 +13,8 @@ public class GuiSelectArena extends GuiBase {
 
     private GuiManager guiManager;
 
-    public GuiSelectArena(GuiManager guiManager) {
+    public GuiSelectArena(SkyArena plugin, GuiManager guiManager) {
+        super(plugin);
         this.guiManager = guiManager;
     }
 
@@ -24,6 +26,16 @@ public class GuiSelectArena extends GuiBase {
     @Override
     public boolean showReturnButton() {
         return true;
+    }
+
+    @Override
+    public boolean showLeaveButton() {
+        return true;
+    }
+
+    @Override
+    public boolean refreshGui() {
+        return false;
     }
 
     @Override
@@ -42,7 +54,7 @@ public class GuiSelectArena extends GuiBase {
     }
 
     @Override
-    public void setContent(Inventory inv, Object arg) {
+    public void setContent(Inventory inv, Object... arg) {
         inv.setItem(20, ItemFormat.setItemName("Arène facile", Material.SKULL_ITEM, 1, (byte)0, null, false));
         inv.setItem(24, ItemFormat.setItemName("Arène difficile", Material.SKULL_ITEM, 1, (byte)1, null, false));
     }

@@ -1,14 +1,17 @@
 package fr.arthix.skyarena.arena;
 
+import fr.arthix.skyarena.SkyArena;
+import fr.arthix.skyarena.rewards.Rewards;
+import fr.arthix.skyarena.rewards.RewardsManager;
 import fr.arthix.skyarena.titleapi.TitleAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Arena {
     /*
@@ -29,6 +32,8 @@ public class Arena {
     private List<UUID> players = new ArrayList<>();
     private List<Location> playersSpawn = new ArrayList<>();
     private List<Location> mobsSpawn = new ArrayList<>();
+    private List<Location> bossSpawn = new ArrayList<>();
+    private Map<UUID, List<Rewards>> rewards = new HashMap<>();
     private Location border1;
     private Location border2;
     private int maxWaves;
@@ -38,7 +43,9 @@ public class Arena {
     private ArenaState state;
     private int mobWave;
 
-    public Arena(String arenaName, Location border1, Location border2, int maxWaves, String bossName, ArenaDifficulty difficulty) {
+    private SkyArena plugin;
+
+    public Arena(SkyArena plugin, String arenaName, Location border1, Location border2, int maxWaves, String bossName, ArenaDifficulty difficulty) {
         this.name = arenaName;
         this.border1 = border1;
         this.border2 = border2;
@@ -48,6 +55,8 @@ public class Arena {
         this.difficulty = difficulty;
         this.state = ArenaState.FREE;
         this.mobWave = -1;
+        this.plugin = plugin;
+        rewardTimer();
     }
 
     public String getArenaName() {
@@ -160,5 +169,113 @@ public class Arena {
                 TitleAPI.sendTitle(p, 10, 20, 10, title, subtitle);
             }
         }
+    }
+
+    public List<Location> getBossSpawn() {
+        return bossSpawn;
+    }
+
+    public void setBossSpawn(List<Location> bossSpawn) {
+        this.bossSpawn = bossSpawn;
+    }
+
+    public void addBossSpawn(Location loc) {
+        this.bossSpawn.add(loc);
+    }
+
+    public List<Player> getAlivePlayers() {
+        List<Player> alive = new ArrayList<>();
+        for (UUID uuid : this.players) {
+            Player p = Bukkit.getPlayer(uuid);
+            if (p != null) {
+                if (p.getGameMode() != GameMode.ADVENTURE) {
+                    alive.add(p);
+                }
+            }
+        }
+        return alive;
+    }
+
+    public void setSpectate(Player p, boolean bool) {
+        if (bool) {
+            p.setGameMode(GameMode.ADVENTURE);
+            p.setAllowFlight(true);
+            p.setFlying(true);
+            p.setCanPickupItems(false);
+            p.setInvulnerable(true);
+            p.setCollidable(false);
+            for (UUID uuid : this.getPlayers()) {
+                OfflinePlayer pp = Bukkit.getOfflinePlayer(uuid);
+                if (pp.isOnline()) {
+                    Player pO = pp.getPlayer();
+                    if (pO != p) {
+                        pO.hidePlayer(plugin, p);
+                    }
+                }
+            }
+        } else {
+            p.setGameMode(GameMode.SURVIVAL);
+            p.setAllowFlight(false);
+            p.setFlying(false);
+            p.setCanPickupItems(true);
+            p.setInvulnerable(false);
+            p.setCollidable(true);
+            for (UUID uuid : this.getPlayers()) {
+                OfflinePlayer pp = Bukkit.getOfflinePlayer(uuid);
+                if (pp.isOnline()) {
+                    Player pO = pp.getPlayer();
+                    if (pO != p) {
+                        pO.showPlayer(plugin, p);
+                    }
+                }
+            }
+        }
+    }
+
+    public Map<UUID, List<Rewards>> getRewards() {
+        return rewards;
+    }
+
+    public List<Rewards> getRewards(UUID uuid) {
+        return rewards.get(uuid);
+    }
+
+    public void setRewards(Map<UUID, List<Rewards>> rewards) {
+        this.rewards = rewards;
+    }
+
+    public void addReward(UUID uuid, Rewards is) {
+        if (!this.rewards.containsKey(uuid)) {
+            this.rewards.put(uuid, new ArrayList<>());
+        }
+        this.rewards.get(uuid).add(is);
+    }
+
+    public void addReward(UUID uuid, List<Rewards> is) {
+        if (!this.rewards.containsKey(uuid)) {
+            this.rewards.put(uuid, new ArrayList<>());
+        }
+        this.rewards.get(uuid).addAll(is);
+    }
+
+    public void rewardTimer() {
+        RewardsManager rewardsManager = plugin.getRewardsManager();
+        rewardsManager.setRemaining(this, 30);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            if (this.getArenaState() == ArenaState.SELECTING_REWARD) {
+                int remaining = rewardsManager.getRemaining(this);
+                rewardsManager.setRemaining(this, remaining - 1);
+                if (remaining == 0) {
+                    this.setArenaState(ArenaState.IN_PROGRESS);
+                    for (Player p : this.getAlivePlayers()) {
+                        this.addReward(p.getUniqueId(), rewardsManager.getSelectedReward(p, this));
+                        rewardsManager.removeSelectedReward(p.getUniqueId());
+                        p.closeInventory();
+                    }
+                    plugin.getArenaManager().spawnMobs(this, actualWave);
+                    rewardsManager.setRemaining(this, 30);
+                }
+            }
+        }, 0L, 20L);
     }
 }

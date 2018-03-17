@@ -3,6 +3,7 @@ package fr.arthix.skyarena.events;
 import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.arena.Arena;
 import fr.arthix.skyarena.arena.ArenaManager;
+import fr.arthix.skyarena.arena.ArenaState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +23,7 @@ public class MobDeathEvent implements Listener {
     public void onMobDeath(EntityDeathEvent e) {
         if (!(e.getEntity() instanceof Player)) {
             Arena arena = arenaManager.getArena(e.getEntity().getLocation());
-            if (arena != null) {
+            if (arena != null && arena.getArenaState() == ArenaState.IN_PROGRESS) {
                 arena.setMobWave(arena.getMobWave() - 1);
                 if (arena.getMobWave() == 0) {
                     arenaManager.startWave(arena);

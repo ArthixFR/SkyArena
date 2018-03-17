@@ -1,8 +1,8 @@
 name: SkyArena
 author: Arthix
-version: 0.2-PRE-ALPHA-DEV-SNAPSHOT
+version: 0.3-PRE-ALPHA-DEV-SNAPSHOT
 main: fr.arthix.skyarena.SkyArena
-depend: [MythicMobs]
+depend: [MythicMobs, ItemBox]
 commands:
     skyarena:
     group:

@@ -49,8 +49,6 @@ public class SkyarenaCreateCommand extends CommandExecutor {
             return;
         }
 
-        // TODO: Check le bossname via mythicmobs
-
         switch (difficultyStr) {
             case "easy":
                 difficulty = ArenaDifficulty.EASY;

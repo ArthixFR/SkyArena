@@ -2,12 +2,14 @@ package fr.arthix.skyarena.utils;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.arena.Arena;
 import fr.arthix.skyarena.arena.ArenaState;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -21,6 +23,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class ItemFormat {
+
+    private SkyArena plugin;
+
+    public ItemFormat(SkyArena plugin) {
+        this.plugin = plugin;
+    }
+
     public static ItemStack setItemName(String customName, Material material, int amount, byte damage, List lore, boolean glow) {
         ItemStack is = new ItemStack(material, amount, damage);
         ItemMeta im = is.getItemMeta();
@@ -90,7 +99,26 @@ public class ItemFormat {
         return is;
     }
 
-    public static ItemStack arenaItem(Arena arena) { // TODO: CA RISQUE DE CRASH !
+    public static ItemStack setGlowing(ItemStack is, boolean glow) {
+        ItemMeta im = is.getItemMeta();
+        if (glow) {
+            im.addEnchant(Enchantment.DURABILITY, 1, false);
+            im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        } else {
+            if (im.hasEnchants()) {
+                for (Enchantment enchantment : im.getEnchants().keySet()) {
+                    im.removeEnchant(enchantment);
+                }
+                if (im.hasItemFlag(ItemFlag.HIDE_ENCHANTS)) {
+                    im.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
+            }
+        }
+        is.setItemMeta(im);
+        return is;
+    }
+
+    public ItemStack arenaItem(Arena arena, Inventory inv, int slot) {
         ArenaState status = arena.getArenaState();
         Material material;
         List<String> lore = new ArrayList<>();
@@ -104,6 +132,10 @@ public class ItemFormat {
                 material = Material.CONCRETE;
                 metadata = 14;
                 break;
+            case TELEPORTING:
+                material = Material.CONCRETE;
+                metadata = 1;
+                break;
             default:
                 material = Material.SKULL_ITEM;
                 metadata = 3;
@@ -116,7 +148,7 @@ public class ItemFormat {
             SkullMeta sm = (SkullMeta) is.getItemMeta();
             lore.add("Status : " + arena.getArenaState().getName());
             if (status == ArenaState.IN_PROGRESS) {
-                lore.add("Vagues complétées : " + arena.getActualWave() + " sur " + arena.getMaxWaves());
+                lore.add("Vague actuelle : " + arena.getActualWave() + " sur " + arena.getMaxWaves());
             } else if (status == ArenaState.BOSS) {
                 lore.add("Boss : " + arena.getBossName());
             }
@@ -125,18 +157,23 @@ public class ItemFormat {
                 lore.add(" - " + Bukkit.getPlayer(uuid).getName());
             }
 
-            sm.setOwningPlayer(Bukkit.getOfflinePlayer(arena.getPlayers().get(0)));
             sm.setDisplayName(arena.getArenaName());
             sm.setLore(lore);
 
             is.setItemMeta(sm);
+
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                ItemStack item = inv.getItem(slot);
+                SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
+                skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(arena.getPlayers().get(0)));
+                item.setItemMeta(skullMeta);
+                inv.setItem(slot, item);
+
+            });
         } else {
             ItemMeta im = is.getItemMeta();
-            if (metadata == 5) {
-                lore.add("§a§lLibre !");
-            } else if (metadata == 14) {
-                lore.add("§c§lFermée !");
-            }
+
+            lore.add(arena.getArenaState().getName());
             im.setDisplayName(arena.getArenaName());
             im.setLore(lore);
 

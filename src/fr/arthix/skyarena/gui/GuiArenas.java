@@ -28,12 +28,15 @@ public class GuiArenas extends GuiBase {
     private GuiManager guiManager;
     private ArenaManager arenaManager;
     private GroupManager groupManager;
+    private ItemFormat itemFormat;
 
     public GuiArenas(SkyArena plugin) {
+        super(plugin);
         this.plugin = plugin;
         this.guiManager = plugin.getGuiManager();
         this.arenaManager = plugin.getArenaManager();
         this.groupManager = plugin.getGroupManager();
+        this.itemFormat = new ItemFormat(plugin);
     }
 
     @Override
@@ -43,6 +46,16 @@ public class GuiArenas extends GuiBase {
 
     @Override
     public boolean showReturnButton() {
+        return true;
+    }
+
+    @Override
+    public boolean showLeaveButton() {
+        return true;
+    }
+
+    @Override
+    public boolean refreshGui() {
         return true;
     }
 
@@ -62,12 +75,23 @@ public class GuiArenas extends GuiBase {
     }
 
     @Override
-    public void setContent(Inventory inv, Object arg) {
-        if (arg instanceof ArenaDifficulty) {
-            ArenaDifficulty arenaDifficulty = (ArenaDifficulty) arg;
+    public void setContent(Inventory inv, Object... arg) {
+        if (arg[0] instanceof ArenaDifficulty) {
+            ArenaDifficulty arenaDifficulty = (ArenaDifficulty) arg[0];
             List<Arena> arenaList = arenaManager.getArenasByDifficulty(arenaDifficulty);
+            int i = 10;
             for (Arena arena : arenaList) {
-                inv.addItem(ItemFormat.arenaItem(arena));
+                if (((i + 1) % 9) == 0) {
+                    i = i + 2;
+                }
+                ItemStack arenaItem = itemFormat.arenaItem(arena, inv, i);
+                ItemStack item = inv.getItem(i);
+                if (item == null) {
+                    inv.setItem(i, itemFormat.arenaItem(arena, inv, i));
+                } else if (!(arenaItem.getDurability() == item.getDurability() && arenaItem.getType() == item.getType() && item.getItemMeta().getLore().equals(arenaItem.getItemMeta().getLore()))) {
+                    inv.setItem(i, itemFormat.arenaItem(arena, inv, i));
+                }
+                i++;
             }
         }
     }
@@ -81,7 +105,11 @@ public class GuiArenas extends GuiBase {
         if (arena != null) {
             if (arena.getArenaState() == ArenaState.FREE) {
                 Group group = groupManager.getGroup(p.getUniqueId());
-                if (group != null) {
+                if (group == null) {
+                    group = groupManager.createGroup(p);
+                }
+                final Group groupF = group;
+                //if (group != null) {
                     if (Bukkit.getPlayer(group.getOwner()) == null) {
                         p.sendMessage(ChatUtils.ERROR_PREFIX + Bukkit.getOfflinePlayer(group.getOwner()).getName() + " est déconnecté !");
                         return;
@@ -98,27 +126,19 @@ public class GuiArenas extends GuiBase {
                     System.out.println(noKey);
                     if (noKey.isEmpty()) {
                         group.removeKey(difficulty);
+                        arena.setArenaState(ArenaState.TELEPORTING);
                         p.closeInventory();
-                        for (UUID uuid : group.getMembers()) {
-                            Player pp = Bukkit.getPlayer(uuid);
-                            TitleAPI.sendTitle(pp, 10, 20, 10, "Début de l'arène dans", "5 secondes");
-                            Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(pp, 10, 20, 10, null, "4 secondes"), 20L);
-                            Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(pp, 10, 20, 10, null, "3 secondes"), 40L);
-                            Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(pp, 10, 20, 10, null, "2 secondes"), 60L);
-                            Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(pp, 10, 20, 10, null, "1 seconde"), 80L);
-                        }
-                        TitleAPI.sendTitle(p, 10, 20, 10, "Début de l'arène dans", "5 secondes");
-                        Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(p, 10, 20, 10, null, "4 secondes"), 20L);
-                        Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(p, 10, 20, 10, null, "3 secondes"), 40L);
-                        Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(p, 10, 20, 10, null, "2 secondes"), 60L);
-                        Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(p, 10, 20, 10, null, "1 seconde"), 80L);
+                        group.sendTitle("Téléportation dans", "5 secondes");
+                        Bukkit.getScheduler().runTaskLater(plugin, () -> groupF.sendTitle("Téléportation dans", "4 secondes"), 20L);
+                        Bukkit.getScheduler().runTaskLater(plugin, () -> groupF.sendTitle("Téléportation dans", "3 secondes"), 40L);
+                        Bukkit.getScheduler().runTaskLater(plugin, () -> groupF.sendTitle("Téléportation dans", "2 secondes"), 60L);
+                        Bukkit.getScheduler().runTaskLater(plugin, () -> groupF.sendTitle("Téléportation dans", "1 seconde"), 80L);
                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                            System.out.println("Teleporting players...");
-                            arenaManager.addPlayerToArena(group.getOwner(), arena);
-                            arenaManager.addPlayerToArena(group.getMembers(), arena);
+                            groupF.sendTitle("Téléportation dans l'arène...", "");
+                            arenaManager.addPlayerToArena(groupF.getOwner(), arena);
+                            arenaManager.addPlayerToArena(groupF.getMembers(), arena);
                             arenaManager.startArena(arena);
                         }, 100L);
-                        System.out.println("All users have key !");
                     } else {
                         String userNoKey = "";
                         for (UUID uuid : noKey) {
@@ -134,30 +154,6 @@ public class GuiArenas extends GuiBase {
                         }
                         p.sendMessage(ChatUtils.ERROR_PREFIX + userNoKey + " ne possède" + (noKey.size() == 1 ? "" : "nt") + " pas la clé !");
                     }
-                } else {
-                    for (ItemStack i : p.getInventory().getStorageContents()) {
-                        if (i != null && i.getType() != Material.AIR) {
-                            if (i.hasItemMeta() && i.getItemMeta().hasDisplayName()) {
-                                if (i.getItemMeta().getDisplayName().equals(arena.getDifficulty().getItemKey().getItemMeta().getDisplayName()) && i.getType() == arena.getDifficulty().getItemKey().getType()) {
-                                    i.setAmount(i.getAmount() - 1);
-                                    p.closeInventory();
-                                    TitleAPI.sendTitle(p, 10, 20, 10, "Début de l'arène dans", "5 secondes");
-                                    Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(p, 10, 20, 10, null, "4 secondes"), 20L);
-                                    Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(p, 10, 20, 10, null, "3 secondes"), 40L);
-                                    Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(p, 10, 20, 10, null, "2 secondes"), 60L);
-                                    Bukkit.getScheduler().runTaskLater(plugin, () -> TitleAPI.sendTitle(p, 10, 20, 10, null, "1 seconde"), 80L);
-                                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                                        arenaManager.addPlayerToArena(p.getUniqueId(), arena);
-                                        arenaManager.startArena(arena);
-                                        System.out.println("Teleporting players...");
-                                    }, 100L);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    System.out.println("player have no key");
-                }
             }
         }
     }

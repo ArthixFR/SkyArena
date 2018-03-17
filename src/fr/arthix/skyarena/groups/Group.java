@@ -1,6 +1,7 @@
 package fr.arthix.skyarena.groups;
 
 import fr.arthix.skyarena.arena.ArenaDifficulty;
+import fr.arthix.skyarena.titleapi.TitleAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -52,6 +53,18 @@ public class Group {
         }
         if ((player = Bukkit.getPlayer(owner)) != null) {
             player.sendMessage(message);
+        }
+    }
+
+    public void sendTitle(String title, String subtitle) {
+        Player player;
+        for (UUID uuid : members) {
+            if ((player = Bukkit.getPlayer(uuid)) != null) {
+                TitleAPI.sendTitle(player, 10, 30, 10, title, subtitle);
+            }
+        }
+        if ((player = Bukkit.getPlayer(owner)) != null) {
+            TitleAPI.sendTitle(player, 10, 30, 10, title, subtitle);
         }
     }
 

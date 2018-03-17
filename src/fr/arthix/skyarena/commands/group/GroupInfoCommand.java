@@ -4,6 +4,7 @@ import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.commands.CommandExecutor;
 import fr.arthix.skyarena.groups.Group;
 import fr.arthix.skyarena.groups.GroupManager;
+import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,27 +30,28 @@ public class GroupInfoCommand extends CommandExecutor {
         Player p = (Player) sender;
         if (groupManager.hasGroup(p.getUniqueId())) {
             Group group = groupManager.getGroup(p.getUniqueId());
-            p.sendMessage("Owner : " + Bukkit.getOfflinePlayer(group.getOwner()).getName());
+            p.sendMessage("§7§m-------§7 §b§lGroupe §7§m-------");
+            p.sendMessage("§7- Leader : " + Bukkit.getOfflinePlayer(group.getOwner()).getName());
             List<UUID> members = group.getMembers();
             if (members.isEmpty()) {
-                p.sendMessage("Aucun membre !");
+                p.sendMessage("§7- Aucun membre !");
             } else {
-                p.sendMessage("Membres :");
+                p.sendMessage("§7- Membres :");
                 for (UUID m : members) {
-                    p.sendMessage("- " + Bukkit.getOfflinePlayer(m).getName());
+                    p.sendMessage("§7  - " + Bukkit.getOfflinePlayer(m).getName());
                 }
             }
             List<UUID> invites = groupManager.getInvitesByGroup(group);
             if (invites.isEmpty()) {
-                p.sendMessage("Aucune invitation dans le groupe !");
+                p.sendMessage("§7- Aucune invitation !");
             } else {
-                p.sendMessage("Invitations :");
+                p.sendMessage("§7- Invitations :");
                 for (UUID uuid : invites) {
-                    p.sendMessage("- " + Bukkit.getPlayer(uuid).getName());
+                    p.sendMessage("§7  - " + Bukkit.getPlayer(uuid).getName());
                 }
             }
         } else {
-            p.sendMessage("Vous n'avez aucun groupe !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez aucun groupe !");
         }
     }
 }

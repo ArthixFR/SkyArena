@@ -38,6 +38,7 @@ public final class ConfigManager {
             Arena arena = arenaManager.createArena(fileConfiguration.getString("name"), (Location) fileConfiguration.get("borders.1"), (Location) fileConfiguration.get("borders.2"), fileConfiguration.getInt("waves"), fileConfiguration.getString("bossName"), ArenaDifficulty.valueOf(fileConfiguration.getString("difficulty")));
             arena.setMobsSpawn((List<Location>) fileConfiguration.getList("mobs"));
             arena.setPlayersSpawn((List<Location>) fileConfiguration.getList("players"));
+            arena.setBossSpawn((List<Location>) fileConfiguration.getList("boss"));
         }
     }
 

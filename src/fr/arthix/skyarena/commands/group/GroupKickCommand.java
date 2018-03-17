@@ -4,6 +4,7 @@ import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.commands.CommandExecutor;
 import fr.arthix.skyarena.groups.Group;
 import fr.arthix.skyarena.groups.GroupManager;
+import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -26,7 +27,7 @@ public class GroupKickCommand extends CommandExecutor {
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player) sender;
         if (!groupManager.hasGroup(p.getUniqueId())) {
-            p.sendMessage("Vous n'avez pas de groupe !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez pas de groupe !");
             return;
         }
 
@@ -34,34 +35,33 @@ public class GroupKickCommand extends CommandExecutor {
 
         if (group.isOwner(p.getUniqueId())) {
             if (args.length < 2) {
-                p.sendMessage("Merci de préciser un joueur !");
+                p.sendMessage(ChatUtils.ERROR_PREFIX + "Merci de préciser un joueur !");
                 return;
             }
             OfflinePlayer pOff = Bukkit.getOfflinePlayer(args[1]);
             if (pOff == null) {
-                p.sendMessage("Joueur introuvable !");
+                p.sendMessage(ChatUtils.ERROR_PREFIX + "Joueur introuvable !");
                 return;
             }
             if (groupManager.hasGroup(pOff.getUniqueId())) {
                 if (groupManager.getGroup(pOff.getUniqueId()) == group) {
                     if (pOff.getUniqueId() == p.getUniqueId()) {
-                        p.sendMessage("Vous ne pouvez pas vous exclure !");
+                        p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous ne pouvez pas vous exclure !");
                         return;
                     }
                     group.removeMember(pOff.getUniqueId());
                     if (pOff.isOnline()) {
-                        pOff.getPlayer().sendMessage(Bukkit.getPlayer(group.getOwner()).getName() + " vous a exclu du groupe !");
+                        pOff.getPlayer().sendMessage(ChatUtils.GROUP_PREFIX + Bukkit.getPlayer(group.getOwner()).getName() + " vous a exclu du groupe !");
                     }
-                    group.sendMessage(pOff.getName() + " a été exclu du groupe !");
+                    group.sendMessage(ChatUtils.GROUP_PREFIX + pOff.getName() + " a été exclu du groupe !");
                 } else {
-                    p.sendMessage("Ce joueur n'est pas dans votre groupe !");
+                    p.sendMessage(ChatUtils.ERROR_PREFIX + "Ce joueur n'est pas dans votre groupe !");
                 }
             } else {
-                p.sendMessage("Ce joueur n'est pas dans votre groupe !");
+                p.sendMessage(ChatUtils.ERROR_PREFIX + "Ce joueur n'est pas dans votre groupe !");
             }
         } else {
-            p.sendMessage("Vous n'êtes pas le propriétaire du groupe !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'êtes pas le propriétaire du groupe !");
         }
-        return;
     }
 }

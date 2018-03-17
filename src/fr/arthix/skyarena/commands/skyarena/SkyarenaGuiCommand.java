@@ -24,6 +24,6 @@ public class SkyarenaGuiCommand extends CommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player) sender;
-        guiManager.openGui(p, "main", null);
+        guiManager.openGui(p, "main");
     }
 }

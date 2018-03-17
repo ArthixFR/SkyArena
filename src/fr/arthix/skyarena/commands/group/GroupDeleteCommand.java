@@ -3,6 +3,7 @@ package fr.arthix.skyarena.commands.group;
 import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.commands.CommandExecutor;
 import fr.arthix.skyarena.groups.GroupManager;
+import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,10 +27,10 @@ public class GroupDeleteCommand extends CommandExecutor {
             if (groupManager.getGroup(p.getUniqueId()).isOwner(p.getUniqueId())) {
                 groupManager.removeGroup(groupManager.getGroup(p.getUniqueId()));
             } else {
-                p.sendMessage("Vous n'êtes pas le propriétaire du groupe !");
+                p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'êtes pas le propriétaire du groupe !");
             }
         } else {
-            p.sendMessage("Vous n'avez aucun groupe !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez aucun groupe !");
         }
         return;
     }

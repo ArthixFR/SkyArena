@@ -1,5 +1,6 @@
 package fr.arthix.skyarena.groups;
 
+import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -27,27 +28,38 @@ public final class GroupManager {
             for (UUID uuid : getInvitesByGroup(g)) {
                 invites.remove(uuid);
             }
-            g.sendMessage("Votre groupe a été supprimé!");
+            g.sendMessage(ChatUtils.GROUP_PREFIX + "Votre groupe a été supprimé!");
         }
     }
 
     public Group getGroup(UUID uuid) {
-        return groups.stream().findFirst().filter((g) -> g.isMember(uuid)).orElse(null);
+        for (Group g : groups) {
+            if (g.isMember(uuid)) {
+                return g;
+            }
+        }
+        return null;
     }
 
     public Group hasInvite(UUID uuid) {
-        Map.Entry<UUID, Group> invite = invites.entrySet().stream().findFirst().filter((g) -> g.getKey().equals(uuid)).orElse(null);
-        return invite != null ? invite.getValue() : null;
+        for (Map.Entry<UUID, Group> invite : invites.entrySet()) {
+            if (invite.getKey().equals(uuid)) {
+                return invite.getValue();
+            }
+        }
+        return null;
+        //Map.Entry<UUID, Group> invite = invites.entrySet().stream().findFirst().filter((g) -> g.getKey().equals(uuid)).orElse(null);
+        //return invite != null ? invite.getValue() : null;
     }
 
     public void invitePlayer(Player p, Group g) {
         Player owner = Bukkit.getPlayer(g.getOwner());
         if (hasInvite(p.getUniqueId()) != null) {
-            owner.sendMessage(p.getName() + " a déjà été invité dans un groupe !");
+            owner.sendMessage(ChatUtils.ERROR_PREFIX + p.getName() + " a déjà été invité dans un groupe !");
         } else {
             invites.put(p.getUniqueId(), g);
-            g.sendMessage(p.getName() + " a été invité dans le groupe !");
-            p.sendMessage(Bukkit.getPlayer(g.getOwner()).getName() + " vous a invité a rejoindre son groupe !");
+            g.sendMessage(ChatUtils.GROUP_PREFIX + p.getName() + " a été invité dans le groupe !");
+            p.sendMessage(ChatUtils.GROUP_PREFIX + Bukkit.getPlayer(g.getOwner()).getName() + " vous a invité a rejoindre son groupe !");
         }
     }
 
@@ -68,32 +80,32 @@ public final class GroupManager {
     public void acceptInvite(Player p) {
         Group groupInvited = hasInvite(p.getUniqueId());
         if (groupInvited == null) {
-            p.sendMessage("Vous n'avez pas d'invitation !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez pas d'invitation !");
             return;
         }
         if (hasGroup(p.getUniqueId())) {
-            p.sendMessage("Vous êtes déjà dans un groupe !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous êtes déjà dans un groupe !");
             return;
         }
         invites.remove(p.getUniqueId());
-        groupInvited.sendMessage(p.getName() + " a rejoint le groupe !");
+        groupInvited.sendMessage(ChatUtils.GROUP_PREFIX + p.getName() + " a rejoint le groupe !");
         groupInvited.addMember(p.getUniqueId());
-        p.sendMessage("Vous avez rejoint le groupe de " + Bukkit.getPlayer(groupInvited.getOwner()).getName() + " !");
+        p.sendMessage(ChatUtils.GROUP_PREFIX + "Vous avez rejoint le groupe de " + Bukkit.getPlayer(groupInvited.getOwner()).getName() + " !");
     }
 
     public void refuseInvite(Player p) {
         Group groupInvited = hasInvite(p.getUniqueId());
         if (groupInvited == null) {
-            p.sendMessage("Vous n'avez pas d'invitation !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez pas d'invitation !");
             return;
         }
         if (hasGroup(p.getUniqueId())) {
-            p.sendMessage("Vous êtes déjà dans un groupe !");
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous êtes déjà dans un groupe !");
             return;
         }
         invites.remove(p.getUniqueId());
         Player owner = Bukkit.getPlayer(groupInvited.getOwner());
-        owner.sendMessage(p.getName() + " a refusé votre invitation !");
-        p.sendMessage("Vous avez refusé l'invitation du groupe de " + owner.getName());
+        owner.sendMessage(ChatUtils.GROUP_PREFIX + p.getName() + " a refusé votre invitation !");
+        p.sendMessage(ChatUtils.GROUP_PREFIX + "Vous avez refusé l'invitation du groupe de " + owner.getName());
     }
 }
