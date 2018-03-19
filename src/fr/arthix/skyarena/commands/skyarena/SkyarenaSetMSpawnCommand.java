@@ -6,10 +6,10 @@ import fr.arthix.skyarena.arena.ArenaManager;
 import fr.arthix.skyarena.commands.CommandExecutor;
 import fr.arthix.skyarena.config.ConfigManager;
 import fr.arthix.skyarena.utils.ChatUtils;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SkyarenaSetMSpawnCommand extends CommandExecutor {
@@ -24,6 +24,7 @@ public class SkyarenaSetMSpawnCommand extends CommandExecutor {
         setLength(1);
         setPermission("skyarena.admin.setmobspawn");
         setUsage("/skyarena setmobspawn");
+        setDescription("Ajoute un point de spawn pour les mobs.");
         arenaManager = plugin.getArenaManager();
         configManager = plugin.getConfigManager();
     }
@@ -34,10 +35,15 @@ public class SkyarenaSetMSpawnCommand extends CommandExecutor {
         Arena arena = arenaManager.getArena(p.getLocation());
         if (arena != null) {
             arena.addMobsSpawn(p.getLocation());
-            configManager.setConfig(arena, "mobs", arena.getMobsSpawn());
+            configManager.setArenaConfig(arena, "mobs", arena.getMobsSpawn());
             p.sendMessage(ChatUtils.SKYARENA_PREFIX + "Point de spawn de mob défini avec succès !");
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous devez être dans une arène pour exécuter cette commande !");
         }
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        return Arrays.asList("");
     }
 }

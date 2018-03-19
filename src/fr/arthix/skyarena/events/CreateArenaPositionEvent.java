@@ -2,6 +2,7 @@ package fr.arthix.skyarena.events;
 
 import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.arena.ArenaManager;
+import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,7 +41,7 @@ public class CreateArenaPositionEvent implements Listener {
                                 arenaManager.arenaCreationLocation.get(uuid).set(0, bLoc);
                             }
                             //System.out.println(arenaManager.arenaCreationLocation.get(uuid).get(0));
-                            e.getPlayer().sendMessage("Position 1 définie (X:" + bLoc.getBlockX() + " Y:" + bLoc.getBlockY() + " Z:" + bLoc.getBlockZ() + ")");
+                            e.getPlayer().sendMessage(ChatUtils.SKYARENA_PREFIX + "Position 1 définie (X:" + bLoc.getBlockX() + " Y:" + bLoc.getBlockY() + " Z:" + bLoc.getBlockZ() + ")");
                             e.setCancelled(true);
                         } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                             if (!arenaManager.arenaCreationLocation.containsKey(uuid)) {
@@ -52,7 +53,7 @@ public class CreateArenaPositionEvent implements Listener {
                                 arenaManager.arenaCreationLocation.get(uuid).set(1, bLoc);
                             }
                             //System.out.println(arenaManager.arenaCreationLocation.get(uuid).get(1));
-                            e.getPlayer().sendMessage("Position 2 définie (X:" + bLoc.getBlockX() + " Y:" + bLoc.getBlockY() + " Z:" + bLoc.getBlockZ() + ")");
+                            e.getPlayer().sendMessage(ChatUtils.SKYARENA_PREFIX + "Position 2 définie (X:" + bLoc.getBlockX() + " Y:" + bLoc.getBlockY() + " Z:" + bLoc.getBlockZ() + ")");
                             e.setCancelled(true);
                         }
                     }

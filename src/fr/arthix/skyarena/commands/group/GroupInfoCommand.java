@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ public class GroupInfoCommand extends CommandExecutor {
         setPlayer(true);
         setLength(1);
         setUsage("/group info");
+        setDescription("Affiche les informations du groupe.");
         groupManager = plugin.getGroupManager();
     }
 
@@ -50,8 +52,14 @@ public class GroupInfoCommand extends CommandExecutor {
                     p.sendMessage("§7  - " + Bukkit.getPlayer(uuid).getName());
                 }
             }
+            p.sendMessage("§7§m-------§7 §b§lGroupe §7§m-------");
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez aucun groupe !");
         }
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        return Arrays.asList("");
     }
 }

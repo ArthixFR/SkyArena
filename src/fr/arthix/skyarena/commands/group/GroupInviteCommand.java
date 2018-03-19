@@ -9,6 +9,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class GroupInviteCommand extends CommandExecutor {
 
     private GroupManager groupManager;
@@ -19,6 +23,7 @@ public class GroupInviteCommand extends CommandExecutor {
         setPlayer(true);
         setLength(2);
         setUsage("/group invite <joueur>");
+        setDescription("Permet d'inviter un joueur au groupe.");
         groupManager = plugin.getGroupManager();
     }
 
@@ -47,8 +52,24 @@ public class GroupInviteCommand extends CommandExecutor {
                 p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'êtes pas le propriétaire du groupe !");
             }
         } else {
-            p.sendMessage(ChatUtils.GROUP_PREFIX + "Groupe créée et joueur invité !");
+            p.sendMessage(ChatUtils.GROUP_PREFIX + "Groupe créé et joueur invité !");
             groupManager.invitePlayer(pI, groupManager.createGroup(p));
         }
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> players = new ArrayList<>();
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (groupManager.hasInvite(p.getUniqueId()) == null) {
+                    if (args[1].isEmpty() || p.getName().startsWith(args[1])) {
+                        players.add(p.getName());
+                    }
+                }
+            }
+            return players;
+        }
+        return Arrays.asList("");
     }
 }

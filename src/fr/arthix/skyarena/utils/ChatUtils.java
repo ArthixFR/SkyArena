@@ -5,6 +5,21 @@ public class ChatUtils {
     public static String SKYARENA_PREFIX = "§6§lSkyArena §8§l>> §7";
     public static String GROUP_PREFIX = "§b§lGroupe §8§l>> §7";
 
+    public static String argsToString(String[] args, int start) {
+        String str = "";
+        for (int i = start; i < args.length; i++) {
+            String arg = "";
+            if ((i + 1) != args.length) {
+                arg = args[i] + " ";
+            } else {
+                arg = args[i];
+            }
+            str = str + arg;
+        }
+        return str;
+    }
+
+    //TODO: FAIRE CHAT CLIQUABLE
 
     /*
             Refuse text

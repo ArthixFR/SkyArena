@@ -35,6 +35,14 @@ public final class RewardsManager {
         rewardsList.add(new Rewards(material, name, amount, metadata, percentage, rarity, arenaDifficulty));
     }
 
+    public List<Rewards> getRewardsList() {
+        return rewardsList;
+    }
+
+    public void setRewardsList(List<Rewards> rewardsList) {
+        this.rewardsList = rewardsList;
+    }
+
     public void loadRewards() {
         addReward(Material.BEDROCK, "§c§lBedrock", 1, (byte)0, 10, Rarity.RARE, ArenaDifficulty.EASY);
         addReward(Material.COAL_BLOCK, "§fCoal block", 16, (byte)0, 50, Rarity.COMMON, ArenaDifficulty.EASY);

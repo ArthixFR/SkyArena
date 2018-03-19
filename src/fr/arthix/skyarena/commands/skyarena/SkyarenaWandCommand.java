@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SkyarenaWandCommand extends CommandExecutor {
 
     public SkyarenaWandCommand(SkyArena plugin) {
@@ -17,6 +20,7 @@ public class SkyarenaWandCommand extends CommandExecutor {
         setLength(1);
         setPermission("skyarena.admin.wand");
         setUsage("/skyarena wand");
+        setDescription("Donne une hache de selection.");
     }
 
     @Override
@@ -27,5 +31,10 @@ public class SkyarenaWandCommand extends CommandExecutor {
         im.setDisplayName("§b§lSkyArena §7| §e§lHache de sélection");
         is.setItemMeta(im);
         p.getInventory().addItem(is);
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        return Arrays.asList("");
     }
 }

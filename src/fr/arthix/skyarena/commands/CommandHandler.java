@@ -7,11 +7,12 @@ import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
+import java.util.*;
 
-public class CommandHandler implements org.bukkit.command.CommandExecutor {
+public class CommandHandler implements org.bukkit.command.CommandExecutor, TabCompleter {
 
     private HashMap<String, CommandExecutor> commands = new HashMap<>();
 
@@ -35,17 +36,32 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
             commands.put("gui", new SkyarenaGuiCommand(plugin));
             commands.put("give", new SkyarenaGiveCommand(plugin));
             commands.put("setspectator", new SkyarenaSetSpectatorCommand(plugin));
+            commands.put("reload", new SkyarenaReloadCommand(plugin));
+            commands.put("list", new SkyarenaListCommand(plugin));
+            commands.put("stop", new SkyarenaStopCommand(plugin));
+            commands.put("open", new SkyarenaOpenCommand(plugin));
+            commands.put("close", new SkyarenaCloseCommand(plugin));
         }
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (args.length < 1) {
-            if (command.getName().equalsIgnoreCase("group")) {
-                sender.sendMessage(ChatUtils.SKYARENA_PREFIX + "Utilisation : /group <create/delete/info/invite/join/kick/leave/refuse>");
-            } else if (command.getName().equalsIgnoreCase("skyarena")) {
-                sender.sendMessage(ChatUtils.SKYARENA_PREFIX + "Utilisation : /skyarena <create/wand/setplayerspawn/setmobspawn/setbossspawn/info/give/gui>");
+            if (!sender.hasPermission("skyarena.help") && command.getName().equalsIgnoreCase("skyarena")) {
+                sender.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez pas la permission d'executer cette commande !");
+                return true;
             }
+
+            sender.sendMessage("§7§m-------§7 §a§lAide §7§m-------");
+            for (Map.Entry<String, CommandExecutor> entry : commands.entrySet()) {
+                if (entry.getValue().getPermission() == null) {
+                    sender.sendMessage("§a" + entry.getValue().getUsage() + " §f: §7" + entry.getValue().getDescription());
+                } else if (sender.hasPermission(entry.getValue().getPermission()) || sender instanceof ConsoleCommandSender) {
+                    sender.sendMessage("§a" + entry.getValue().getUsage() + " §f: §7" + entry.getValue().getDescription());
+                }
+            }
+            sender.sendMessage("§7§m-------§7 §a§lAide §7§m-------");
+
             return true;
         }
         String name = args[0];
@@ -77,5 +93,32 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor {
             commandExecutor.execute(sender, args);
         }
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
+        if (args.length == 1) {
+            List<String> tabCommands = new ArrayList<>();
+            for (Map.Entry<String, CommandExecutor> entry : commands.entrySet()) {
+                if (entry.getValue().getPermission() == null || (sender.hasPermission(entry.getValue().getPermission()) || sender instanceof ConsoleCommandSender)) {
+                    if (args[0].isEmpty() || entry.getKey().startsWith(args[0])) {
+                        tabCommands.add(entry.getKey());
+                    }
+                }
+            }
+            return tabCommands;
+        }
+
+        String name = args[0];
+        if (commands.containsKey(name)) {
+            final CommandExecutor commandExecutor = commands.get(name);
+
+            if (commandExecutor.getPermission() != null && !sender.hasPermission(commandExecutor.getPermission())) {
+                return Arrays.asList("");
+            }
+
+            return commandExecutor.tabCompleter(sender, args);
+        }
+        return Arrays.asList("");
     }
 }

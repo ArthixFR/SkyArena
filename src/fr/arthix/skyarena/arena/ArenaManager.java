@@ -2,14 +2,21 @@ package fr.arthix.skyarena.arena;
 
 import fr.arthix.skyarena.SkyArena;
 import fr.arthix.skyarena.gui.GuiManager;
+import fr.arthix.skyarena.rewards.Rewards;
 import fr.arthix.skyarena.rewards.RewardsManager;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MobManager;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.itembox.main.ItemBox;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,18 +29,28 @@ public final class ArenaManager {
     private MobManager mobManager;
     private GuiManager guiManager;
     private RewardsManager rewardsManager;
+    private ItemBox itemBox;
 
     public ArenaManager(SkyArena plugin) {
         this.plugin = plugin;
         mobManager = plugin.getMythicMobs().getMobManager();
         guiManager = plugin.getGuiManager();
         rewardsManager = plugin.getRewardsManager();
+        itemBox = plugin.getItemBox();
     }
 
     public Arena createArena(String name, Location border1, Location border2, int wavesMax, String bossName, ArenaDifficulty difficulty) {
         Arena arena = new Arena(plugin, name, border1, border2, wavesMax, bossName, difficulty);
         arenas.add(arena);
         return arena;
+    }
+
+    public List<Arena> getArenas() {
+        return arenas;
+    }
+
+    public void setArenas(List<Arena> arenas) {
+        this.arenas = arenas;
     }
 
     public void addPlayerToArena(UUID p, Arena a) {
@@ -61,11 +78,21 @@ public final class ArenaManager {
     }
 
     public Arena getArena(Player p) {
-        return arenas.stream().findFirst().filter((a) -> a.getPlayers().contains(p.getUniqueId())).orElse(null);
+        for (Arena a : arenas) {
+            if (a.getPlayers().contains(p.getUniqueId())) {
+                return a;
+            }
+        }
+        return null;
     }
 
     public Arena getArena(String name) {
-        return arenas.stream().findFirst().filter((a) -> a.getArenaName().equals(name)).orElse(null);
+        for (Arena a : arenas) {
+            if (a.getArenaName().equals(name)) {
+                return a;
+            }
+        }
+        return null;
     }
 
     public Arena getArena(Location loc) {
@@ -168,5 +195,97 @@ public final class ArenaManager {
 
             mobManager.spawnMob("ZombieTest", loc);
         }
+    }
+
+    public void stopArena(Arena a, boolean bosskilled) {
+        a.setArenaState(ArenaState.FINISH);
+        if (bosskilled) {
+            for (UUID uuid : a.getPlayers()) {
+                for (Rewards reward : a.getRewards(uuid)) {
+                    //System.out.println(Bukkit.getOfflinePlayer(uuid).getName() + " a gagné " + reward.getAmount() + "x" + reward.getName() + " (" + reward.getRarity().getName() + ")");
+                    ItemStack is = new ItemStack(reward.getMaterial(), reward.getAmount(), reward.getMetadata());
+                    itemBox.getPlayerDataManager().getOrLoadPlayerInfo(Bukkit.getOfflinePlayer(uuid)).addItem(is);
+                }
+            }
+            a.sendTitle("Fin de l'arène dans", "20 secondes");
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                for (UUID uuid : a.getPlayers()) {
+                    OfflinePlayer offP = Bukkit.getOfflinePlayer(uuid);
+                    if (offP.isOnline()) {
+                        Player p = offP.getPlayer();
+                        if (getArena(p.getLocation()) == a) {
+                            p.teleport(Bukkit.getWorld("world").getSpawnLocation()); //TODO: A CHANGER VIA CONFIG
+                        }
+                    }
+                }
+                resetArena(a);
+            }, 20 * 20L);
+        } else {
+            resetArena(a);
+        }
+    }
+
+    public void setSpectator(Player p, Arena a, boolean set) {
+        p.setGameMode(set ? GameMode.ADVENTURE : GameMode.SURVIVAL);
+        p.setAllowFlight(set);
+        p.setFlying(set);
+        p.setCanPickupItems(!set);
+        p.setInvulnerable(set);
+        p.setCollidable(!set);
+        if (a == null) {
+            for (Player pp : Bukkit.getOnlinePlayers()) {
+                if (pp == p) continue;
+                if (set) {
+                    if (pp.canSee(p)) {
+                        pp.hidePlayer(plugin, p);
+                    }
+                } else {
+                    if (!pp.canSee(p)) {
+                        pp.showPlayer(plugin, p);
+                    }
+                }
+            }
+        } else {
+            for (UUID uuid : a.getPlayers()) {
+                OfflinePlayer pp = Bukkit.getOfflinePlayer(uuid);
+                if (pp.isOnline()) {
+                    Player pO = pp.getPlayer();
+                    if (pO == p) continue;
+                    if (set) {
+                        pO.hidePlayer(plugin, p);
+                    } else {
+                        pO.showPlayer(plugin, p);
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean isSpectate(Player p) {
+        return p.getGameMode() == GameMode.ADVENTURE && p.getAllowFlight() && p.getAllowFlight() && !p.getCanPickupItems() && p.isInvulnerable() && !p.isCollidable();
+    }
+
+    public void resetArena(Arena a) {
+        for (UUID uuid : a.getPlayers()) {
+            OfflinePlayer offP = Bukkit.getOfflinePlayer(uuid);
+            if (offP.isOnline()) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (isSpectate(p)) {
+                    setSpectator(p, a, false);
+                }
+            }
+        }
+        for (Entity e : a.getBorder().get(0).getWorld().getEntities()) {
+            if (getArena(e.getLocation()) != null) {
+                if (!(e instanceof Player)) {
+                    e.remove();
+                }
+            }
+        }
+        a.setPlayers(new ArrayList<>());
+        a.setMobWave(0);
+        a.setActualWave(0);
+        a.setRewards(new HashMap<>());
+        a.setArenaState(ArenaState.FREE);
     }
 }

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SkyarenaGiveCommand extends CommandExecutor {
@@ -22,6 +23,7 @@ public class SkyarenaGiveCommand extends CommandExecutor {
         setLength(4);
         setPermission("skyarena.admin.give");
         setUsage("/skyarena give <player> <difficulty> <quantity>");
+        setDescription("Permet de donner des clés a un joueur.");
     }
 
     @Override
@@ -91,6 +93,23 @@ public class SkyarenaGiveCommand extends CommandExecutor {
         }
 
         sender.sendMessage(ChatUtils.ERROR_PREFIX + "Le joueur n'a pas assez de place dans son inventaire !");
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> players = new ArrayList<>();
+            Bukkit.getOnlinePlayers().forEach((p) -> {
+                if (args[1].isEmpty() || p.getName().startsWith(args[1])) {
+                    players.add(p.getName());
+                }
+            });
+            return players;
+        } else if (args.length == 3) {
+            return ArenaDifficulty.getDifficulties();
+        }
+
+        return Arrays.asList("");
     }
 
     private void addKey(ArenaDifficulty difficulty, int quantity, Player pI) {

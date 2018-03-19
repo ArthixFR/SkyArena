@@ -9,6 +9,9 @@ import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SkyarenaSetBossSpawnCommand extends CommandExecutor {
     private ArenaManager arenaManager;
     private ConfigManager configManager;
@@ -20,6 +23,7 @@ public class SkyarenaSetBossSpawnCommand extends CommandExecutor {
         setLength(1);
         setPermission("skyarena.admin.setbossspawn");
         setUsage("/skyarena setbossspawn");
+        setDescription("Ajoute un point de spawn pour le boss.");
         arenaManager = plugin.getArenaManager();
         configManager = plugin.getConfigManager();
     }
@@ -30,10 +34,15 @@ public class SkyarenaSetBossSpawnCommand extends CommandExecutor {
         Arena arena = arenaManager.getArena(p.getLocation());
         if (arena != null) {
             arena.addBossSpawn(p.getLocation());
-            configManager.setConfig(arena, "boss", arena.getBossSpawn());
+            configManager.setArenaConfig(arena, "boss", arena.getBossSpawn());
             p.sendMessage(ChatUtils.SKYARENA_PREFIX + "Point de spawn du boss défini avec succès !");
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous devez être dans une arène pour exécuter cette commande !");
         }
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        return Arrays.asList("");
     }
 }

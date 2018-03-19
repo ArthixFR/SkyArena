@@ -10,6 +10,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
 public class GroupKickCommand extends CommandExecutor {
 
     private GroupManager groupManager;
@@ -20,6 +25,7 @@ public class GroupKickCommand extends CommandExecutor {
         setPlayer(true);
         setLength(2);
         setUsage("/group kick <joueur>");
+        setDescription("Exclu un joueur du groupe.");
         groupManager = plugin.getGroupManager();
     }
 
@@ -63,5 +69,27 @@ public class GroupKickCommand extends CommandExecutor {
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'êtes pas le propriétaire du groupe !");
         }
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> players = new ArrayList<>();
+            if (sender instanceof Player) {
+                Player p = (Player) sender;
+                if (groupManager.hasGroup(p.getUniqueId())) {
+                    Group g = groupManager.getGroup(p.getUniqueId());
+                    if (g.getOwner() == p.getUniqueId()) {
+                        for (UUID uuid : g.getMembers()) {
+                            if (args[1].isEmpty() || Bukkit.getOfflinePlayer(uuid).getName().startsWith(args[1])) {
+                                players.add(Bukkit.getOfflinePlayer(uuid).getName());
+                            }
+                        }
+                    }
+                }
+            }
+            return players;
+        }
+        return Arrays.asList("");
     }
 }

@@ -1,5 +1,7 @@
 package fr.arthix.skyarena.rewards;
 
+import fr.arthix.skyarena.arena.ArenaDifficulty;
+
 public enum Rarity {
     COMMON("Commun", "§8(§7✬§8✬✬✬✬)"),
     UNCOMMON("Peu-commun", "§8(§a✬✬§8✬✬✬)"),
@@ -20,5 +22,14 @@ public enum Rarity {
     }
     public String getLore() {
         return this.lore;
+    }
+
+    public static Rarity getRarityByName(String str) {
+        for (Rarity rarity : Rarity.values()) {
+            if (rarity.toString().toLowerCase().equalsIgnoreCase(str)) {
+                return rarity;
+            }
+        }
+        return null;
     }
 }

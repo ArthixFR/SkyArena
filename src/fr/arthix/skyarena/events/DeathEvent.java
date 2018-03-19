@@ -76,7 +76,7 @@ public class DeathEvent implements Listener {
         }
         if (deathList.containsKey(p.getUniqueId())) {
             Arena a = deathList.get(p.getUniqueId());
-            a.setSpectate(p, true);
+            arenaManager.setSpectator(p, a, true);
             List<Player> alive = a.getAlivePlayers();
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (alive.isEmpty()) {

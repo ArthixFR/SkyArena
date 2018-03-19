@@ -7,6 +7,9 @@ import fr.arthix.skyarena.gui.GuiManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SkyarenaGuiCommand extends CommandExecutor {
 
     GuiManager guiManager;
@@ -18,6 +21,7 @@ public class SkyarenaGuiCommand extends CommandExecutor {
         setLength(1);
         setPermission("skyarena.admin.gui");
         setUsage("/skyarena gui");
+        setDescription("Ouvre le GUI.");
         guiManager = plugin.getGuiManager();
     }
 
@@ -25,5 +29,10 @@ public class SkyarenaGuiCommand extends CommandExecutor {
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player) sender;
         guiManager.openGui(p, "main");
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        return Arrays.asList("");
     }
 }

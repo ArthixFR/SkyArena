@@ -10,10 +10,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class SkyarenaSetSpectatorCommand extends CommandExecutor {
 
     private ArenaManager arenaManager;
-    private ConfigManager configManager;
 
     public SkyarenaSetSpectatorCommand(SkyArena plugin) {
         setConsole(false);
@@ -21,22 +24,30 @@ public class SkyarenaSetSpectatorCommand extends CommandExecutor {
         setCommand("setspectator");
         setLength(3);
         setPermission("skyarena.admin.setspectator");
-        setUsage("/skyarena setspectator");
+        setUsage("/skyarena setspectator <player> <true/false>");
+        setDescription("Met un joueur en spectateur ou non.");
         arenaManager = plugin.getArenaManager();
-        configManager = plugin.getConfigManager();
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player p = Bukkit.getPlayer(args[1]);
         if (p == null) {
+            sender.sendMessage(ChatUtils.ERROR_PREFIX + "Joueur introuvable !");
             return;
         }
-        Arena arena = arenaManager.getArena(p);
-        if (arena != null) {
-            arena.setSpectate(p, Boolean.valueOf(args[2]));
-        } else {
-            p.sendMessage(ChatUtils.ERROR_PREFIX + "Le joueur n'est pas dans une arène !");
+        arenaManager.setSpectator(p, arenaManager.getArena(p), Boolean.valueOf(args[2]));
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> players = new ArrayList<>();
+            Bukkit.getOnlinePlayers().forEach((p) -> players.add(p.getName()));
+            return players;
+        } else if (args.length == 3) {
+            return Arrays.asList("true", "false");
         }
+        return Arrays.asList("");
     }
 }

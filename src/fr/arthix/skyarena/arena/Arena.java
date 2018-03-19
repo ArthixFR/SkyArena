@@ -146,6 +146,12 @@ public class Arena {
         this.players.addAll(players);
     }
 
+    public void removePlayer(UUID uuid) {
+        if (this.players.contains(uuid)) {
+            this.players.remove(uuid);
+        }
+    }
+
     public void addPlayerSpawn(Location loc) {
         this.playersSpawn.add(loc);
     }
@@ -194,42 +200,6 @@ public class Arena {
             }
         }
         return alive;
-    }
-
-    public void setSpectate(Player p, boolean bool) {
-        if (bool) {
-            p.setGameMode(GameMode.ADVENTURE);
-            p.setAllowFlight(true);
-            p.setFlying(true);
-            p.setCanPickupItems(false);
-            p.setInvulnerable(true);
-            p.setCollidable(false);
-            for (UUID uuid : this.getPlayers()) {
-                OfflinePlayer pp = Bukkit.getOfflinePlayer(uuid);
-                if (pp.isOnline()) {
-                    Player pO = pp.getPlayer();
-                    if (pO != p) {
-                        pO.hidePlayer(plugin, p);
-                    }
-                }
-            }
-        } else {
-            p.setGameMode(GameMode.SURVIVAL);
-            p.setAllowFlight(false);
-            p.setFlying(false);
-            p.setCanPickupItems(true);
-            p.setInvulnerable(false);
-            p.setCollidable(true);
-            for (UUID uuid : this.getPlayers()) {
-                OfflinePlayer pp = Bukkit.getOfflinePlayer(uuid);
-                if (pp.isOnline()) {
-                    Player pO = pp.getPlayer();
-                    if (pO != p) {
-                        pO.showPlayer(plugin, p);
-                    }
-                }
-            }
-        }
     }
 
     public Map<UUID, List<Rewards>> getRewards() {

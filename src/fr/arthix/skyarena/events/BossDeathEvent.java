@@ -24,12 +24,10 @@ public class BossDeathEvent implements Listener {
 
     private MobManager mobManager;
     private ArenaManager arenaManager;
-    private ItemBox itemBox;
 
     public BossDeathEvent(SkyArena plugin) {
         mobManager = plugin.getMythicMobs().getMobManager();
         arenaManager = plugin.getArenaManager();
-        itemBox = plugin.getItemBox();
     }
 
     @EventHandler
@@ -39,15 +37,8 @@ public class BossDeathEvent implements Listener {
         Arena a = arenaManager.getArena(loc);
         if (a != null) {
             if (e.getMob().getType() == mobManager.getMythicMob(a.getBossName())) {
-                a.setArenaState(ArenaState.FINISH);
-                System.out.println("LE BOSS EST MORT");
-                for (UUID uuid : a.getPlayers()) {
-                    for (Rewards reward : a.getRewards(uuid)) {
-                        System.out.println(Bukkit.getOfflinePlayer(uuid).getName() + " a gagné " + reward.getAmount() + "x" + reward.getName() + " (" + reward.getRarity().getName() + ")");
-                        ItemStack is = new ItemStack(reward.getMaterial(), reward.getAmount(), reward.getMetadata());
-                        itemBox.getPlayerDataManager().getOrLoadPlayerInfo(Bukkit.getOfflinePlayer(uuid)).addItem(is);
-                    }
-                }
+                arenaManager.stopArena(a, true);
+
                 //arenaManager.stopArena();
             }
         }

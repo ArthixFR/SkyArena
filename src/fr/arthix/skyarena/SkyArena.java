@@ -49,18 +49,17 @@ public class SkyArena extends JavaPlugin {
         groupManager = new GroupManager();
         getLogger().log(Level.INFO, "Loading arena manager...");
         arenaManager = new ArenaManager(this);
-        getLogger().log(Level.INFO, "Loading config manager...");
-        configManager = new ConfigManager(this);
         getLogger().log(Level.INFO, "Loading rewards manager...");
         rewardsManager = new RewardsManager(this);
+        getLogger().log(Level.INFO, "Loading config manager...");
+        configManager = new ConfigManager(this);
         getLogger().log(Level.INFO, "Loading gui manager...");
         guiManager = new GuiManager(this);
 
-        getLogger().log(Level.INFO, "Loading rewards...");
-        rewardsManager.loadRewards();
-
         getLogger().log(Level.INFO, "Loading arenas...");
         configManager.loadArenas();
+        getLogger().log(Level.INFO, "Loading rewards...");
+        configManager.loadRewards();
 
         getLogger().log(Level.INFO, "Loading commands...");
         getCommand("group").setExecutor(new CommandHandler("group", this));
@@ -77,6 +76,9 @@ public class SkyArena extends JavaPlugin {
         pm.registerEvents(new EntityDamageEvent(this), this);
         pm.registerEvents(new ItemDropEvent(this), this);
         pm.registerEvents(new EntityTargetSpectatorEvent(this), this);
+        pm.registerEvents(new JoinEvent(this), this);
+        pm.registerEvents(new LeaveEvent(this), this);
+        pm.registerEvents(new PlayerCommandEvent(this), this);
 
         getLogger().log(Level.INFO, "SkyArena loaded !");
     }

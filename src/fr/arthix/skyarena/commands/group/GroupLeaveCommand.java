@@ -9,11 +9,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GroupLeaveCommand extends CommandExecutor {
 
     private GroupManager groupManager;
 
     public GroupLeaveCommand(SkyArena plugin) {
+        setCommand("leave");
+        setConsole(false);
+        setPlayer(true);
+        setLength(1);
+        setUsage("/group leave");
+        setDescription("Permet de quitter le groupe.");
         groupManager = plugin.getGroupManager();
     }
 
@@ -32,6 +41,10 @@ public class GroupLeaveCommand extends CommandExecutor {
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez pas de groupe !");
         }
-        return;
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        return Arrays.asList("");
     }
 }

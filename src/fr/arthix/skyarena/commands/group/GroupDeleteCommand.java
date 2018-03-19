@@ -7,6 +7,9 @@ import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GroupDeleteCommand extends CommandExecutor {
 
     private GroupManager groupManager;
@@ -17,6 +20,7 @@ public class GroupDeleteCommand extends CommandExecutor {
         setPlayer(true);
         setLength(1);
         setUsage("/group delete");
+        setDescription("Supprime le groupe.");
         groupManager = plugin.getGroupManager();
     }
 
@@ -32,6 +36,10 @@ public class GroupDeleteCommand extends CommandExecutor {
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous n'avez aucun groupe !");
         }
-        return;
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        return Arrays.asList("");
     }
 }

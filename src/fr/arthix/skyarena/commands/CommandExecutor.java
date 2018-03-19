@@ -2,6 +2,8 @@ package fr.arthix.skyarena.commands;
 
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public abstract class CommandExecutor {
 
     private String command;
@@ -10,8 +12,11 @@ public abstract class CommandExecutor {
     private boolean console;
     private boolean player;
     private int length;
+    private String description;
 
     public abstract void execute(CommandSender sender, String[] args);
+
+    public abstract List<String> tabCompleter(CommandSender sender, String[] args);
 
     public void setBoth() {
         this.console = true;
@@ -68,5 +73,13 @@ public abstract class CommandExecutor {
 
     public void setUsage(String usage) {
         this.usage = usage;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

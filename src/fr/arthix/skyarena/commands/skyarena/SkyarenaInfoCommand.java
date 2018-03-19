@@ -11,6 +11,8 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +26,8 @@ public class SkyarenaInfoCommand extends CommandExecutor {
         setCommand("info");
         setLength(1);
         setPermission("skyarena.admin.info");
-        setUsage("/skyarena info");
+        setUsage("/skyarena info (arena)");
+        setDescription("Affiche les informations d'une arène.");
         arenaManager = plugin.getArenaManager();
     }
 
@@ -33,7 +36,12 @@ public class SkyarenaInfoCommand extends CommandExecutor {
         Player p = (Player) sender;
         Arena arena = arenaManager.getArena(p.getLocation());
 
-        if (arena != null) {
+        if (arena != null || args.length >= 2) {
+            if (arena == null) arena = arenaManager.getArena(ChatUtils.argsToString(args, 1));
+            if (arena == null) {
+                p.sendMessage(ChatUtils.ERROR_PREFIX + "Arène introuvable !");
+                return;
+            }
             List<UUID> playersInArena = arena.getPlayers();
             ArenaState state = arena.getArenaState();
             Location pos1 = arena.getBorder().get(0);
@@ -60,5 +68,19 @@ public class SkyarenaInfoCommand extends CommandExecutor {
         } else {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous devez être dans une arène pour exécuter cette commande !");
         }
+    }
+
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        if (args.length >= 2) {
+            List<String> arenaNames = new ArrayList<>();
+            for (Arena a : arenaManager.getArenas()) {
+                if (args[1].isEmpty() || a.getArenaName().startsWith(args[1])) {
+                    arenaNames.add(a.getArenaName());
+                }
+            }
+            return arenaNames;
+        }
+        return Arrays.asList("");
     }
 }

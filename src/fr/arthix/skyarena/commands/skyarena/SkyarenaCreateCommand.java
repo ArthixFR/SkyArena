@@ -9,6 +9,9 @@ import fr.arthix.skyarena.utils.ChatUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SkyarenaCreateCommand extends CommandExecutor {
 
     private ArenaManager arenaManager;
@@ -21,6 +24,7 @@ public class SkyarenaCreateCommand extends CommandExecutor {
         setLength(5);
         setPermission("skyarena.admin.create");
         setUsage("/skyarena create <maxWaves> <bossname> <difficulty> <nom>");
+        setDescription("Permet de créer une arène.");
         arenaManager = plugin.getArenaManager();
         configManager = plugin.getConfigManager();
     }
@@ -31,8 +35,8 @@ public class SkyarenaCreateCommand extends CommandExecutor {
         int maxWaves = Integer.valueOf(args[1]);
         String bossname = args[2];
         String difficultyStr = args[3];
-        ArenaDifficulty difficulty;
-        String name = argsToString(args, 4);
+        ArenaDifficulty difficulty = null;
+        String name = ChatUtils.argsToString(args, 4);
 
         if (!arenaManager.arenaCreationLocation.containsKey(p.getUniqueId())) {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Vous devez définir la zone de l'arène ! (/skyarena wand)");
@@ -49,7 +53,18 @@ public class SkyarenaCreateCommand extends CommandExecutor {
             return;
         }
 
-        switch (difficultyStr) {
+        for (String str : ArenaDifficulty.getDifficulties()) {
+            if (difficultyStr.equals(str)) {
+                difficulty = ArenaDifficulty.getDifficultyByName(str);
+            }
+        }
+
+        if (difficulty == null) {
+            p.sendMessage(ChatUtils.ERROR_PREFIX + "La difficulté est incorrecte ! Disponible : " + ArenaDifficulty.getDifficulties().toString().replaceAll("\\[", "").replaceAll("]",""));
+            return;
+        }
+
+        /*switch (difficultyStr) {
             case "easy":
                 difficulty = ArenaDifficulty.EASY;
                 break;
@@ -65,7 +80,7 @@ public class SkyarenaCreateCommand extends CommandExecutor {
             default:
                 p.sendMessage(ChatUtils.ERROR_PREFIX + "La difficulté est incorrecte ! Disponible : easy, medium, hard, extreme");
                 return;
-        }
+        }*/
 
         if (arenaManager.getArena(name) != null) {
             p.sendMessage(ChatUtils.ERROR_PREFIX + "Ce nom est déjà utilisé !");
@@ -73,23 +88,17 @@ public class SkyarenaCreateCommand extends CommandExecutor {
         }
 
         //System.out.println(arenaManager.arenaCreationLocation.get(p.getUniqueId()).size() + " : " + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0) + ";" + arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1));
-        configManager.createConfig(name, arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0), arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1), maxWaves, bossname, difficulty);
+        configManager.createArenaConfig(name, arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0), arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1), maxWaves, bossname, difficulty);
         arenaManager.createArena(name, arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(0), arenaManager.arenaCreationLocation.get(p.getUniqueId()).get(1), maxWaves, bossname, difficulty);
         arenaManager.arenaCreationLocation.remove(p.getUniqueId());
         p.sendMessage(ChatUtils.SKYARENA_PREFIX + "Arène créée avec succès ! N'oubliez pas de définir les spawn de joueurs et mobs avec §f/skyarena setplayerspawn §7& §f/skyarena setmobspawn §7!");
     }
 
-    public static String argsToString(String[] args, int start) {
-        String str = "";
-        for (int i = start; i < args.length; i++) {
-            String arg = "";
-            if ((i + 1) != args.length) {
-                arg = args[i] + " ";
-            } else {
-                arg = args[i];
-            }
-            str = str + arg;
+    @Override
+    public List<String> tabCompleter(CommandSender sender, String[] args) {
+        if (args.length == 4) {
+            return ArenaDifficulty.getDifficulties();
         }
-        return str;
+        return Arrays.asList("");
     }
 }
